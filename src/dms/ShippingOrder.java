@@ -1,3 +1,5 @@
+package dms;
+
 public class ShippingOrder {
     private int orderID;
     private String customerName;
@@ -8,6 +10,13 @@ public class ShippingOrder {
 
     // Constructor
     public ShippingOrder(int orderID, String customerName, String shipperName, double weightInPounds, int distanceInMiles) {
+        if (weightInPounds <= 0 || weightInPounds > 10) {
+            throw new IllegalArgumentException("Weight must be between 0 and 10 pounds.");
+        }
+        if (distanceInMiles <= 0) {
+            throw new IllegalArgumentException("Distance must be a positive number.");
+        }
+
         this.orderID = orderID;
         this.customerName = customerName;
         this.shipperName = shipperName;
@@ -46,6 +55,9 @@ public class ShippingOrder {
     }
 
     public void setWeightInPounds(double weightInPounds) {
+        if (weightInPounds <= 0 || weightInPounds > 10) {
+            throw new IllegalArgumentException("Weight must be between 0 and 10 pounds.");
+        }
         this.weightInPounds = weightInPounds;
         this.shippingCost = calculateShippingCost();
     }
@@ -55,6 +67,9 @@ public class ShippingOrder {
     }
 
     public void setDistanceInMiles(int distanceInMiles) {
+        if (distanceInMiles <= 0) {
+            throw new IllegalArgumentException("Distance must be a positive number.");
+        }
         this.distanceInMiles = distanceInMiles;
         this.shippingCost = calculateShippingCost();
     }
@@ -71,10 +86,8 @@ public class ShippingOrder {
             return 1.50 * segments;
         } else if (weightInPounds <= 6) {
             return 3.70 * segments;
-        } else if (weightInPounds <= 10) {
-            return 5.25 * segments;
         } else {
-            throw new IllegalArgumentException("Weight exceeds 10 pounds limit.");
+            return 5.25 * segments;
         }
     }
 
@@ -86,7 +99,7 @@ public class ShippingOrder {
                 ", shipperName='" + shipperName + '\'' +
                 ", weightInPounds=" + weightInPounds +
                 ", distanceInMiles=" + distanceInMiles +
-                ", shippingCost=" + shippingCost +
+                ", shippingCost=$" + String.format("%.2f", shippingCost) +
                 '}';
     }
 }

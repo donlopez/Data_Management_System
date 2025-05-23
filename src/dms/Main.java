@@ -4,43 +4,77 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
-    private static ArrayList<ShippingOrder> orders = new ArrayList<>();
-    private static Scanner scanner = new Scanner(System.in);
+    private static final ArrayList<ShippingOrder> orders = new ArrayList<>();
+    private static final Scanner scanner = new Scanner(System.in);
     private static int nextId = 1;
 
     public static void main(String[] args) {
-        while (true) {
-            System.out.println("\n--- Shipping Management System ---");
-            System.out.println("1. Add Order");
-            System.out.println("2. View Orders");
+        boolean running = true;
+
+        while (running) {
+            System.out.println("\n=== Shipping Management System ===");
+            System.out.println("1. Add Shipping Order");
+            System.out.println("2. View All Orders");
             System.out.println("3. Exit");
-            System.out.print("Select an option: ");
+            System.out.print("Choose an option: ");
 
             int choice = readInt();
             switch (choice) {
-                case 1 -> addOrder();
+                case 1 -> addOrderLoop();
                 case 2 -> viewOrders();
                 case 3 -> {
-                    System.out.println("Goodbye!");
-                    return;
+                    System.out.println("Exiting system. Goodbye!");
+                    running = false;
                 }
-                default -> System.out.println("Invalid option. Try again.");
+                default -> System.out.println("Invalid choice. Please select 1-3.");
+            }
+        }
+    }
+
+    private static void addOrderLoop() {
+        boolean addMore = true;
+
+        while (addMore) {
+            addOrder();
+            System.out.print("\nEnter 1 to add another order or 0 to return to the main menu: ");
+            int again = readInt();
+            if (again != 1) {
+                addMore = false;
             }
         }
     }
 
     private static void addOrder() {
+        String customer;
+        String shipper;
+        double weight = 0;
+        int distance = 0;
+
         System.out.print("Customer Name: ");
-        String customer = scanner.nextLine();
+        customer = scanner.nextLine().trim();
 
         System.out.print("Shipper Name: ");
-        String shipper = scanner.nextLine();
+        shipper = scanner.nextLine().trim();
 
-        System.out.print("Weight in pounds: ");
-        double weight = readDouble();
+        while (weight <= 0 || weight > 10) {
+            System.out.print("Enter weight in pounds (max 10 lbs): ");
+            weight = readDouble();
 
-        System.out.print("Distance in miles: ");
-        int distance = readInt();
+            if (weight <= 0) {
+                System.out.println("Error: Weight must be greater than zero.");
+            } else if (weight > 10) {
+                System.out.println("Error: We don't ship packages over 10 pounds.");
+            }
+        }
+
+        while (distance <= 0) {
+            System.out.print("Enter distance in miles: ");
+            distance = readInt();
+
+            if (distance <= 0) {
+                System.out.println("Error: Distance must be greater than zero.");
+            }
+        }
 
         try {
             ShippingOrder order = new ShippingOrder(nextId++, customer, shipper, weight, distance);
