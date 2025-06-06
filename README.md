@@ -20,12 +20,13 @@ This project is a **Java-based console application** for managing small-package 
 
 The app is divided into three layers for maintainability and scalability:
 
-
+```
 UI Layer (Main.java)
 │
 ├── Logic Layer (ShippingOrderManager.java)
 │
 └── Data Layer (in-memory via ArrayList<ShippingOrder>)
+```
 
 
 ### ✅ UI Layer
