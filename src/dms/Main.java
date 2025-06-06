@@ -3,8 +3,8 @@ package dms;
 import java.util.Scanner;
 
 public class Main {
-    private final Scanner scanner = new Scanner(System.in);
     private final ShippingOrderManager manager = new ShippingOrderManager();
+    private final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
         new Main().run();
@@ -13,9 +13,9 @@ public class Main {
     public void run() {
         int choice;
         do {
-            System.out.println("\n==============================");
+            System.out.println("\n=============================");
             System.out.println("Package Shipping System");
-            System.out.println("==============================");
+            System.out.println("=============================");
             System.out.println("1. Add Order");
             System.out.println("2. View Orders");
             System.out.println("3. Update Order");
@@ -58,121 +58,93 @@ public class Main {
             }
         } while (shipper.isEmpty());
 
-        double weight;
-        do {
-            weight = readDouble("Weight (lbs): ");
-            if (weight < 0.1 || weight > 150) {
-                System.out.println("❌ Weight must be between 0.1 and 150 lbs.");
-                weight = -1;
-            }
-        } while (weight < 0.1);
+        double weight = readDouble("Weight (lbs)", 0.1, 150);
+        int distance = readInt("Distance (miles)", 1, 3000);
 
-        int distance;
-        do {
-            distance = readInt("Distance (whole miles): ");
-            if (distance < 1 || distance > 3000) {
-                System.out.println("❌ Distance must be between 1 and 3000 miles.");
-                distance = -1;
-            }
-        } while (distance < 1);
-
-        boolean success = manager.addOrder(customer, shipper, weight, distance);
-        System.out.println(success ? "✅ Order added successfully." : "❌ Failed to add order.");
+        manager.addOrder(customer, shipper, weight, distance);
+        System.out.println("✅ Order added successfully!");
     }
 
     private void viewOrders() {
-        var orders = manager.getAllOrders();
-        if (orders.isEmpty()) {
-            System.out.println("⚠️ No orders found.");
-            return;
-        }
-
-        for (ShippingOrder order : orders) {
-            System.out.println(order);
+        if (manager.getAllOrders().isEmpty()) {
+            System.out.println("❌ No Orders Found");
+        } else {
+            System.out.println("\n=== Current Orders ===");
+            for (ShippingOrder order : manager.getAllOrders()) {
+                System.out.println(order);
+            }
         }
     }
 
     private void updateOrderUI() {
-        int id = readInt("Enter order ID to update: ");
-        ShippingOrder order = manager.findOrder(id);
-        if (order == null) {
-            System.out.println("❌ No order with ID " + id + " exists.");
-            return;
+        int orderId = readInt("Enter Order ID to update", 1, Integer.MAX_VALUE);
+        ShippingOrder order = manager.findOrder(orderId);
+        if (order != null) {
+            double newWeight = readDouble("New Weight (lbs)", 0.1, 150);
+            int newDistance = readInt("New Distance (miles)", 1, 3000);
+            manager.updateOrder(orderId, newWeight, newDistance);
+            System.out.println("✅ Order updated successfully!");
+        } else {
+            System.out.println("❌ Order Not Found");
         }
-
-        System.out.println("➡️ Current Order: " + order);
-
-        double newWeight;
-        do {
-            newWeight = readDouble("New weight (lbs): ");
-            if (newWeight < 0.1 || newWeight > 150) {
-                System.out.println("❌ Weight must be between 0.1 and 150 lbs.");
-                newWeight = -1;
-            }
-        } while (newWeight < 0.1);
-
-        int newDistance;
-        do {
-            newDistance = readInt("New distance (whole miles): ");
-            if (newDistance < 1 || newDistance > 500) {
-                System.out.println("❌ Distance must be between 1 and 500 miles.");
-                newDistance = -1;
-            }
-        } while (newDistance < 1);
-
-        boolean success = manager.updateOrder(id, newWeight, newDistance);
-        System.out.println(success ? "✅ Order #" + id + " updated successfully." : "❌ Update failed.");
     }
 
     private void deleteOrderUI() {
-        int id = readInt("Enter order ID to delete: ");
-        ShippingOrder order = manager.findOrder(id);
-        if (order == null) {
-            System.out.println("❌ No order with ID " + id + " exists.");
-            return;
-        }
-
-        System.out.println("🗑️ Deleting: " + order);
-        boolean success = manager.deleteOrder(id);
-        System.out.println(success ? "✅ Order #" + id + " deleted." : "❌ Deletion failed.");
-    }
-
-    private int readInt(String prompt) {
-        while (true) {
-            System.out.print(prompt);
-            if (scanner.hasNextInt()) {
-                int val = scanner.nextInt();
-                scanner.nextLine(); // flush newline
-                return val;
+        int orderId = readInt("Enter Order ID to delete", 1, Integer.MAX_VALUE);
+        ShippingOrder order = manager.findOrder(orderId);
+        if (order != null) {
+            System.out.print("Are you sure you want to delete this order? (y/n): ");
+            String confirm = scanner.nextLine().trim();
+            if (confirm.equalsIgnoreCase("y")) {
+                manager.deleteOrder(orderId);
+                System.out.println("✅ Order deleted successfully!");
             } else {
-                System.out.println("❌ Invalid input. Please enter a whole number.");
-                scanner.next(); // discard bad input
+                System.out.println("❌ Deletion canceled.");
             }
-        }
-    }
-
-    private double readDouble(String prompt) {
-        while (true) {
-            System.out.print(prompt);
-            if (scanner.hasNextDouble()) {
-                double val = scanner.nextDouble();
-                scanner.nextLine(); // flush newline
-                return val;
-            } else {
-                System.out.println("❌ Invalid input. Please enter a valid number.");
-                scanner.next(); // discard bad input
-            }
+        } else {
+            System.out.println("❌ Order Not Found");
         }
     }
 
     private int readMenuChoice() {
-        int val;
+        return readInt("Choose an option (1-5)", 1, 5);
+    }
+
+    private int readInt(String fieldName, int min, int max) {
+        int value;
         do {
-            val = readInt("Enter choice (1-5): ");
-            if (val < 1 || val > 5) {
-                System.out.println("❌ Please choose a valid option between 1 and 5.");
+            System.out.print(fieldName + ": ");
+            String input = scanner.nextLine().trim();
+            try {
+                value = Integer.parseInt(input);
+                if (value < min || value > max) {
+                    System.out.println("❌ Value must be between " + min + " and " + max + ".");
+                    value = -1;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("❌ Invalid number. Please enter an integer.");
+                value = -1;
             }
-        } while (val < 1 || val > 5);
-        return val;
+        } while (value == -1);
+        return value;
+    }
+
+    private double readDouble(String fieldName, double min, double max) {
+        double value;
+        do {
+            System.out.print(fieldName + ": ");
+            String input = scanner.nextLine().trim();
+            try {
+                value = Double.parseDouble(input);
+                if (value < min || value > max) {
+                    System.out.println("❌ Value must be between " + min + " and " + max + ".");
+                    value = -1;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("❌ Invalid number. Please enter a number.");
+                value = -1;
+            }
+        } while (value == -1);
+        return value;
     }
 }

@@ -3,9 +3,9 @@ package dms;
 public class ShippingOrder {
     private String customerName;
     private String shipperName;
+    private int orderID;
     private double weightInPounds;
     private int distanceInMiles;
-    private int orderID;
 
     public ShippingOrder(int orderID, String customerName, String shipperName, double weightInPounds, int distanceInMiles) {
         this.orderID = orderID;
@@ -15,25 +15,45 @@ public class ShippingOrder {
         this.distanceInMiles = distanceInMiles;
     }
 
-    public double calculateShippingCost() {
-        return weightInPounds * distanceInMiles * 0.01;
+    public String getCustomerName() {
+        return customerName;
     }
 
-    public int getOrderID() { return orderID; }
-    public String getCustomerName() { return customerName; }
-    public String getShipperName() { return shipperName; }
-    public double getWeightInPounds() { return weightInPounds; }
-    public int getDistanceInMiles() { return distanceInMiles; }
+    public String getShipperName() {
+        return shipperName;
+    }
 
-    public void setOrderID(int orderID) { this.orderID = orderID; }
-    public void setCustomerName(String customerName) { this.customerName = customerName; }
-    public void setShipperName(String shipperName) { this.shipperName = shipperName; }
-    public void setWeightInPounds(double weightInPounds) { this.weightInPounds = weightInPounds; }
-    public void setDistanceInMiles(int distanceInMiles) { this.distanceInMiles = distanceInMiles; }
+    public int getOrderID() {
+        return orderID;
+    }
+
+    public double getWeightInPounds() {
+        return weightInPounds;
+    }
+
+    public int getDistanceInMiles() {
+        return distanceInMiles;
+    }
+
+    public void setWeightInPounds(double weightInPounds) {
+        this.weightInPounds = weightInPounds;
+    }
+
+    public void setDistanceInMiles(int distanceInMiles) {
+        this.distanceInMiles = distanceInMiles;
+    }
+
+    public double calculateShippingCost() {
+        double costPerMile = 0.5;
+        double costPerPound = 0.25;
+        return (distanceInMiles * costPerMile) + (weightInPounds * costPerPound);
+    }
 
     @Override
     public String toString() {
-        return "Order #" + orderID + ": " + customerName + " via " + shipperName +
-                ", " + weightInPounds + " lbs, " + distanceInMiles + " miles, $" + calculateShippingCost();
+        return String.format(
+                "Order ID: %d | Customer: %s | Shipper: %s | Weight: %.2f lbs | Distance: %d miles | Cost: $%.2f",
+                orderID, customerName, shipperName, weightInPounds, distanceInMiles, calculateShippingCost()
+        );
     }
 }
