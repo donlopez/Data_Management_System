@@ -1,62 +1,98 @@
-# Data Management System (Shipping Orders)
+# 📦 Data Management System (Shipping Orders)
 
-## Overview
-
-This Data Management System (DMS) allows users to manage shipping orders through a simple command-line interface. The system supports adding, updating, deleting, and viewing orders, while enforcing validation and calculating shipping costs.
-
-The architecture follows a clean 3-layer structure:
-
-- **UI Layer:** `Main` class (handles CLI interaction)
-- **Logic Layer:** `ShippingOrderManager` class (business logic)
-- **Data Layer:** `ShippingOrder` class (data model)
+This project is a **Java-based console application** for managing small-package shipping orders (like Amazon or e-commerce). It demonstrates strong **object-oriented design**, **layered architecture**, and robust **input validation**.
 
 ---
 
-## UML Diagram
+## 🚀 Features
 
-The following UML diagram shows the current architecture of the system:
+- Add, view, update, and delete shipping orders
+- Input validation: blocks blank entries, non-names, or invalid numbers
+- Error handling for all operations (missing ID, bad format, etc.)
+- Weight validation: 0.1–150 lbs
+- Distance validation: up to 3000 miles
+- Cost calculation based on realistic shipping rate
+- Clear messages for all actions (success, warning, failure)
+
+---
+
+## 📐 Layered Architecture
+
+The app is divided into three layers for maintainability and scalability:
+
+
+UI Layer (Main.java)
+│
+├── Logic Layer (ShippingOrderManager.java)
+│
+└── Data Layer (in-memory via ArrayList<ShippingOrder>)
+
+
+### ✅ UI Layer
+- Command-line interface using `Scanner` and `System.out`
+- Handles user prompts and validations
+- Displays feedback (warnings, errors, confirmations)
+
+### ✅ Logic Layer
+- Encapsulated in `ShippingOrderManager`
+- Performs all CRUD operations
+- Returns boolean/object results (no `void` logic methods)
+- Enforces business rules: weight, distance, ID lookups
+
+### ✅ Data Layer
+- Stores orders in a dynamic in-memory list
+- Easily replaceable with SQL backend (JDBC-ready structure)
+
+---
+
+## 📊 UML Diagram
+
+The following diagram shows the class relationships and method design:
 
 ![UML Diagram](UML/UML_Latest.jpeg)
 
 ---
 
-## Test Flowchart
+## 🗺️ Test Flow Diagram (Flowchart)
 
-The following flowchart illustrates the test plan used for Module 6 (Software Test Plan), including validation logic and test cases for Add, Update, Delete, and View operations:
+The following flowchart illustrates the full test flow and input validation logic:
 
 ![Flowchart](UML/FlowChartFinal.svg)
 
 ---
 
-## Latest Updates
+## 🧠 Input Validation Examples
 
-- Added validation steps and error handling in all operations (Add, Update, Delete).
-- Separated Update flow into distinct steps for weight and distance (per Prof. Evans' feedback).
-- Added explicit **Calculate Shipping Cost** step after updating weight/distance.
-- Cleaned and finalized the flowchart with styling improvements.
-- Enhanced `ShippingOrderManager` and `Main` classes to fully align with updated flowchart and grading criteria.
+- **Customer/Shipper names** must contain only letters and spaces
+- **Weight** must be a valid number between `0.1` and `150`
+- **Distance** must be a whole number between `1` and `3000`
+- **Blank entries** or malformed input trigger warnings
+- **Invalid order IDs** show appropriate error messages
+
+---
+
+## 📝 Latest Updates
+
+- Added validation and error handling in all operations (Add, Update, Delete).
+- Separated Update flow into individual steps for weight and distance.
+- Added explicit *calculate shipping cost* step after updating weight/distance.
+- Cleaned and finalized flowchart with consistent styling.
 - Display shipping cost with 2 decimal digits.
 - Fixed maximum distance limit to **3000 miles**.
 
 ---
 
-## Future Phases / Next Steps
+## 🔮 Future Enhancements
 
-- Add support for **persisting orders** to file (saving/loading between sessions).
-- Implement unit tests for business logic methods.
-- Add sorting and filtering options when viewing orders.
-- Expand shipping cost calculation to include more advanced pricing rules.
-- Implement a more robust **menu loop** with better user experience.
-- Potentially add an option to **export order list** as CSV.
+### Phase 3 – GUI (JavaFX)
+- Buttons for CRUD operations
+- TableView for order summaries
+- Dialogs for errors and confirmations
 
----
-
-## Instructor Feedback Addressed
-
-- ✅ Flowchart revised to avoid multiple conditions per decision box (Update flow now prompts separately for weight and distance).
-- ✅ Shipping cost recalculated after update.
-- ✅ Input validation included on all relevant fields.
-- ✅ Flowchart reflects specific actions in the current app (not generic).
+### Phase 4 – Database Integration
+- JDBC support with SQL schema
+- Load/save orders to a persistent backend
+- Pre-validation before database write operations
 
 ---
 
