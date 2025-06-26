@@ -2,6 +2,9 @@ package dms;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 
 /**
  * Manages shipping orders by handling all CRUD operations.
@@ -101,5 +104,29 @@ public class ShippingOrderManager {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Loads shipping orders from a CSV file. Each row should be:
+     * customerName,shipperName,weight,distance
+     *
+     * @param filename path to the CSV file
+     */
+    public void loadOrdersFromFile(String filename) {
+        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split("\\|");
+                if (parts.length == 5) {
+                    String customerName = parts[1].trim();
+                    String shipperName = parts[2].trim();
+                    double weight = Double.parseDouble(parts[3].trim());
+                    int distance = Integer.parseInt(parts[4].trim());
+                    addOrder(customerName, shipperName, weight, distance);
+                }
+            }
+        } catch (IOException | NumberFormatException e) {
+            System.err.println("Error reading orders from file: " + e.getMessage());
+        }
     }
 }

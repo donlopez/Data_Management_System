@@ -10,16 +10,19 @@ import java.math.BigInteger;
  * Preserves full validation, emojis, and original design.
  * Fully controlled numeric input parsing for professional validation.
  *
- * @author Julio Lopez
- * @version 1.0
+ * Author: Julio Lopez
+ * Version: 1.0
  */
 public class Main {
 
+    // Manager object that handles CRUD operations on shipping orders
     private final ShippingOrderManager manager;
+
+    // Scanner used for user input throughout the application
     private final Scanner scanner;
 
     /**
-     * Constructor initializes manager and scanner.
+     * Constructor initializes the manager and input scanner.
      */
     public Main() {
         manager = new ShippingOrderManager();
@@ -27,23 +30,26 @@ public class Main {
     }
 
     /**
-     * Main program loop displaying the menu and handling user choices.
+     * Main program loop displaying the menu and routing user input to appropriate features.
      */
     public void run() {
         int choice;
         do {
             choice = readMenuChoice();
             switch (choice) {
-                case 1 -> addOrderMenu();
-                case 2 -> viewOrders();
-                case 3 -> updateOrder();
-                case 4 -> deleteOrder();
-                case 5 -> System.out.println("👋 Exiting... All data cleared from memory.");
+                case 1 -> addOrderMenu();         // Option to add orders (manual or from file)
+                case 2 -> viewOrders();           // View all current orders
+                case 3 -> updateOrder();          // Update an existing order
+                case 4 -> deleteOrder();          // Delete an order
+                case 5 -> System.out.println("👋 Exiting... All data cleared from memory."); // Exit
                 default -> System.out.println("❌ Invalid option. Please choose between 1-5.");
             }
         } while (choice != 5);
     }
 
+    /**
+     * Displays the main menu and prompts the user for a valid selection.
+     */
     private int readMenuChoice() {
         System.out.println("\n=============================");
         System.out.println("Package Shipping System");
@@ -57,6 +63,9 @@ public class Main {
         return readValidatedInt(1, 5);
     }
 
+    /**
+     * Offers user two options: upload from file or enter manually.
+     */
     private void addOrderMenu() {
         System.out.println("\n1. Upload Orders from File");
         System.out.println("2. Enter Order Manually");
@@ -69,6 +78,10 @@ public class Main {
         }
     }
 
+    /**
+     * Loads orders from a structured text file and adds valid entries to the system.
+     * Invalid lines or data are skipped with warnings.
+     */
     private void loadOrdersFromFile() {
         System.out.print("Enter filename: ");
         String filename = scanner.nextLine().trim();
@@ -115,12 +128,15 @@ public class Main {
                 }
             }
             System.out.println("✅ File loading complete.");
-            viewOrders(); // ✅ show orders after file load
+            viewOrders(); // Display loaded orders immediately
         } catch (FileNotFoundException e) {
             System.out.println("❌ File not found: " + filename);
         }
     }
 
+    /**
+     * Prompts user to manually enter order details with full validation.
+     */
     private void addOrderManually() {
         String customer = readValidatedName("Customer name");
         String shipper = readValidatedName("Shipper name");
@@ -134,6 +150,9 @@ public class Main {
         }
     }
 
+    /**
+     * Displays all orders currently stored in the system.
+     */
     private void viewOrders() {
         List<ShippingOrder> orders = manager.getAllOrders();
         if (orders.isEmpty()) {
@@ -146,6 +165,9 @@ public class Main {
         }
     }
 
+    /**
+     * Prompts user for an order ID and allows updating weight and distance if the order exists.
+     */
     private void updateOrder() {
         System.out.print("Enter Order ID to update: ");
         int id = readValidatedInt(1, Integer.MAX_VALUE);
@@ -162,6 +184,9 @@ public class Main {
         }
     }
 
+    /**
+     * Prompts user for an order ID and deletes the order if found.
+     */
     private void deleteOrder() {
         System.out.print("Enter Order ID to delete: ");
         int id = readValidatedInt(1, Integer.MAX_VALUE);
@@ -172,6 +197,9 @@ public class Main {
         }
     }
 
+    /**
+     * Validates that a user-entered name contains only letters and spaces.
+     */
     private String readValidatedName(String fieldName) {
         String name;
         do {
@@ -184,10 +212,17 @@ public class Main {
         return name;
     }
 
+    /**
+     * Returns true if the name contains only letters and spaces.
+     */
     private boolean isValidName(String name) {
         return name.matches("[a-zA-Z ]+");
     }
 
+    /**
+     * Reads and validates integer input within specified range.
+     * Rejects non-integer input and overflows using BigInteger.
+     */
     private int readValidatedInt(int min, int max) {
         while (true) {
             String input = scanner.nextLine().trim();
@@ -217,11 +252,17 @@ public class Main {
         }
     }
 
+    /**
+     * Prompts with label and delegates to standard integer validation.
+     */
     private int readValidatedInt(String prompt, int min, int max) {
         System.out.print(prompt + ": ");
         return readValidatedInt(min, max);
     }
 
+    /**
+     * Reads and validates double input with full overflow and format protection.
+     */
     private double readValidatedDouble(String prompt, double min, double max) {
         while (true) {
             System.out.print(prompt + ": ");
@@ -245,6 +286,9 @@ public class Main {
         }
     }
 
+    /**
+     * Application entry point that creates the Main instance and starts the program.
+     */
     public static void main(String[] args) {
         Main app = new Main();
         app.run();
