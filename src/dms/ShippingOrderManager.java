@@ -71,6 +71,15 @@ public class ShippingOrderManager {
     }
 
     /**
+     * Alternate getter for orders for JavaFX compatibility.
+     *
+     * @return list of ShippingOrder objects
+     */
+    public List<ShippingOrder> getOrders() {
+        return orders;
+    }
+
+    /**
      * Deletes an order by ID.
      *
      * @param id order ID to delete
@@ -107,10 +116,10 @@ public class ShippingOrderManager {
     }
 
     /**
-     * Loads shipping orders from a CSV file. Each row should be:
+     * Loads shipping orders from a file. Each row should be:
      * customerName,shipperName,weight,distance
      *
-     * @param filename path to the CSV file
+     * @param filename path to the file
      */
     public void loadOrdersFromFile(String filename) {
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {

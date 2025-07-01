@@ -1,0 +1,182 @@
+/* ================================
+   Root window background and font
+   ================================ */
+.root {
+    -fx-background-color: #1e1e1e;
+    -fx-text-fill: #f0f0f0;
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-size: 16px;
+    -fx-padding: 20;
+}
+
+/* ============================
+   Title bar / header styling
+   ============================ */
+.title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-padding: 20 0 20 0;
+    -fx-text-fill: #ffffff;
+    -fx-alignment: center;
+}
+
+/* ============================
+   Sidebar / toolbar styling
+   ============================ */
+.toolbar {
+    -fx-background-color: #252526;
+    -fx-padding: 20;
+    -fx-spacing: 15;
+}
+
+/* ============================
+   Base button styling
+   ============================ */
+.button {
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-padding: 12 24;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 16px;
+    -fx-min-width: 140px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 6, 0, 0, 3);
+    -fx-transition: all 0.3s ease;
+}
+
+/* Add button styling */
+.btn-add {
+    -fx-background-color: #0d6efd;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 6, 0, 0, 3);
+}
+.btn-add:hover {
+    -fx-background-color: #2563eb;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 8, 0, 0, 4);
+}
+
+/* Delete button styling */
+.btn-delete {
+    -fx-background-color: #dc3545;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 6, 0, 0, 3);
+}
+.btn-delete:hover {
+    -fx-background-color: #c82333;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 8, 0, 0, 4);
+}
+
+/* Update button styling */
+.btn-update {
+    -fx-background-color: #17a2b8;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 6, 0, 0, 3);
+}
+.btn-update:hover {
+    -fx-background-color: #138496;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 8, 0, 0, 4);
+}
+
+/* Exit button styling */
+.btn-exit {
+    -fx-background-color: #6c757d;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 6, 0, 0, 3);
+}
+.btn-exit:hover {
+    -fx-background-color: #5a6268;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 8, 0, 0, 4);
+}
+
+/* ============================
+   Table styling
+   ============================ */
+.table-view {
+    -fx-control-inner-background: #1e1e1e;
+    -fx-table-cell-border-color: #444;
+    -fx-table-header-border-color: #444;
+    -fx-selection-bar: #0d6efd;
+    -fx-selection-bar-text: #ffffff;
+    -fx-font-size: 14px;
+}
+
+/* Table header styling */
+.table-view .column-header {
+    -fx-background-color: #333;
+    -fx-text-fill: #f0f0f0;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-padding: 8;
+}
+.table-view .column-header .label {
+    -fx-text-fill: #f0f0f0;
+}
+
+/* Table cell styling */
+.table-cell {
+    -fx-text-fill: #f0f0f0;
+    -fx-padding: 6;
+}
+
+/* Row hover highlight */
+.table-row-cell:hover {
+    -fx-background-color: #2c2c2c;
+}
+
+/* Maintain selected row highlight after focus loss,
+   but do NOT force focus to look like selection */
+.table-row-cell:selected {
+    -fx-background-color: #0d6efd;
+    -fx-text-fill: #ffffff;
+}
+
+/* Smooth hover transition for rows */
+.table-row-cell {
+    -fx-transition: background-color 0.3s ease;
+}
+
+/* ============================
+   Status label styling
+   ============================ */
+#statusLabel {
+    -fx-text-fill: #0d6efd;
+    -fx-padding: 12;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+/* ============================
+   Dialog popups styling
+   ============================ */
+.dialog-pane {
+    -fx-background-color: #2c2c2c;
+    -fx-border-color: #444;
+    -fx-padding: 20;
+}
+.dialog-pane .header-panel {
+    -fx-background-color: #333;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 18px;
+    -fx-padding: 10;
+}
+.dialog-pane .content.label {
+    -fx-text-fill: #f0f0f0;
+    -fx-font-size: 16px;
+    -fx-padding: 10;
+}
+.dialog-pane .button {
+    -fx-background-radius: 6;
+    -fx-text-fill: #ffffff;
+    -fx-padding: 12 24;
+    -fx-min-width: 100px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 5, 0, 0, 2);
+}
+.dialog-pane .button:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.7), 7, 0, 0, 3);
+}
+.dialog-pane .button:default {
+    -fx-background-color: #0d6efd;
+}
+.dialog-pane .button:cancel {
+    -fx-background-color: #6c757d;
+}
+.dialog-pane .button:cancel:hover {
+    -fx-background-color: #5a6268;
+}

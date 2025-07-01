@@ -62,6 +62,15 @@ public class ShippingOrder {
     }
 
     /**
+     * JavaFX-friendly getter to display shipping cost in a TableView column.
+     *
+     * @return calculated shipping cost
+     */
+    public double getShippingCost() {
+        return calculateShippingCost();
+    }
+
+    /**
      * Returns weight in pounds.
      *
      * @return weight in pounds
