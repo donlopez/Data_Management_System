@@ -1,6 +1,6 @@
 # 📦 Data Management System (Shipping Orders)
 
-This project is a **Java-based console application** for managing small-package shipping orders (like Amazon or e-commerce). It demonstrates strong **object-oriented design**, **layered architecture**, and robust **input validation**.
+This project is a **Java-based console + JavaFX GUI application** for managing small-package shipping orders (like Amazon or e-commerce). It demonstrates strong **object-oriented design**, **layered architecture**, and robust **input validation**.
 
 ---
 
@@ -12,6 +12,8 @@ This project is a **Java-based console application** for managing small-package 
 - Weight validation: 0.1–150 lbs
 - Distance validation: up to 3000 miles
 - Cost calculation based on realistic shipping rate
+- Consistent and user-friendly JavaFX GUI
+- Styled theme inspired by **OBS** (bluish dark theme with modern shadows)
 - Clear messages for all actions (success, warning, failure)
 
 ---
@@ -21,22 +23,25 @@ This project is a **Java-based console application** for managing small-package 
 The app is divided into three layers for maintainability and scalability:
 
 ```
-├── UI Layer (Main.java)
+├── UI Layer (JavaFX + console)
 ├── Logic Layer (ShippingOrderManager.java)
 │
 └── Data Layer (in-memory via ArrayList<ShippingOrder>)
 ```
 
+---
 
 ### ✅ UI Layer
-- Command-line interface using `Scanner` and `System.out`
-- Handles user prompts and validations
-- Displays feedback (warnings, errors, confirmations)
+- JavaFX GUI with stylish dark theme similar to OBS Studio
+- Command-line fallback using `Scanner` and `System.out`
+- Buttons for CRUD
+- TableView to list orders
+- Dialogs for validation, confirmations, and errors
 
 ### ✅ Logic Layer
 - Encapsulated in `ShippingOrderManager`
 - Performs all CRUD operations
-- Returns boolean/object results (no `void` logic methods)
+- Returns boolean/object results
 - Enforces business rules: weight, distance, ID lookups
 
 ### ✅ Data Layer
@@ -61,6 +66,14 @@ The following flowchart illustrates the full test flow and input validation logi
 
 ---
 
+## 🖼️ Sample GUI Preview
+
+The JavaFX GUI phase currently looks like this:
+
+![GUI Sample](UML/GUI.png)
+
+---
+
 ## 🧠 Input Validation Examples
 
 - **Customer/Shipper names** must contain only letters and spaces
@@ -73,21 +86,17 @@ The following flowchart illustrates the full test flow and input validation logi
 
 ## 📝 Latest Updates
 
-- Added validation and error handling in all operations (Add, Update, Delete).
-- Separated Update flow into individual steps for weight and distance.
-- Added explicit *calculate shipping cost* step after updating weight/distance.
-- Cleaned and finalized flowchart with consistent styling.
-- Display shipping cost with 2 decimal digits.
-- Fixed maximum distance limit to **3000 miles**.
+- Phase 1 (Logic) finished with robust validation and error handling.
+- Phase 2 (JUnit testing) implemented for all critical business rules.
+- Phase 3 (GUI) completed with a modern, user-friendly OBS-inspired theme.
+- Buttons have subtle drop shadows, hover transitions, and consistent colors.
+- JavaFX TableView now includes units (e.g., lb, mi, $) and 2-decimal price formatting.
+- Smoothed styling with improved fonts and better focus loss handling on selection.
+- Application is fully ready for next step of JDBC database integration.
 
 ---
 
 ## 🔮 Future Enhancements
-
-### Phase 3 – GUI (JavaFX)
-- Buttons for CRUD operations
-- TableView for order summaries
-- Dialogs for errors and confirmations
 
 ### Phase 4 – Database Integration
 - JDBC support with SQL schema
@@ -104,4 +113,5 @@ The following flowchart illustrates the full test flow and input validation logi
 
 ---
 
-> This project was developed with a focus on clean separation of concerns, testability, and readiness for future GUI/database expansion. All logic methods return values to support unit testing and better system feedback.
+> This project was developed with a focus on clean separation of concerns, testability, and modern UI. Each logic method is test-driven and designed for future growth with a professional-quality look and feel.
+
