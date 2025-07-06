@@ -108,7 +108,7 @@ If you are running the GUI, please follow these steps to add JavaFX to IntelliJ:
     - Add all `.jar` files from that `lib` folder
 4. Finally, in **Run > Edit Configurations**, add the following to VM options:
     - Add all `--module-path <your_path_here>/lib --add-modules javafx.controls,javafx.fxml` (Replace `<your_path_here>` with the actual path where you placed the JavaFX SDK.)
----
+
     > **Note:** If you do not see the VM options field, click  
     > **Modify Options > Add VM options**  
     > at the top of the configuration window to make it visible.
