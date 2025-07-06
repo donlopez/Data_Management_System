@@ -293,12 +293,33 @@ public class MainController {
     private void handleLoadFile() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Select Orders File");
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
+
         File file = chooser.showOpenDialog(new Stage());
 
         if (file != null) {
+            if (!file.getName().toLowerCase().endsWith(".txt")) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Invalid File Format");
+                alert.setHeaderText("Unsupported File Type");
+                alert.setContentText("Please upload a .txt file as instructed by the administrator.");
+                alert.showAndWait();
+                setStatus("Load canceled: wrong file type.");
+                return;
+            }
             shippingOrderManager.loadOrdersFromFile(file.getAbsolutePath());
             orderList.setAll(shippingOrderManager.getOrders());
-            setStatus("Orders loaded from file: " + file.getName());
+
+            if (orderList.isEmpty()) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Invalid File Content");
+                alert.setHeaderText("No valid shipping orders found");
+                alert.setContentText("The selected .txt file does not contain valid order data. Please check the file contents and try again as instructed by the administrator.");
+                alert.showAndWait();
+                setStatus("Load failed: no valid data found.");
+            } else {
+                setStatus("Orders loaded from file: " + file.getName());
+            }
         } else {
             setStatus("No file selected.");
         }

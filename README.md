@@ -74,6 +74,25 @@ The JavaFX GUI phase currently looks like this:
 
 ---
 
+## ⚙️ JavaFX Setup Instructions
+
+If you are running the GUI, please follow these steps to add JavaFX to IntelliJ:
+
+1. Download the JavaFX SDK from [https://gluonhq.com/products/javafx/](https://gluonhq.com/products/javafx/).
+2. Unzip the folder to a known location.
+3. In IntelliJ:
+    - Go to **File > Project Structure > Libraries**
+    - Click the **+** button and select the `lib` directory inside the JavaFX SDK you unzipped
+    - Add all `.jar` files from that `lib` folder
+4. Finally, in **Run > Edit Configurations**, add the following to VM options:
+    - Add all `--module-path <your_path_here>/lib --add-modules javafx.controls,javafx.fxml` (Replace `<your_path_here>` with the actual path where you placed the JavaFX SDK.)
+
+    > **Note:** If you do not see the VM options field, click  
+    > **Modify Options > Add VM options**  
+    > at the top of the configuration window to make it visible.
+
+---
+
 ## 🧠 Input Validation Examples
 
 - **Customer/Shipper names** must contain only letters and spaces
