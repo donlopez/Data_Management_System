@@ -66,6 +66,28 @@ The following flowchart illustrates the full test flow and input validation logi
 
 ---
 
+## 🧪 Phase 1 – Logic and Input Validation
+
+Phase 1 focused on designing and implementing the core shipping order logic using Java classes, ensuring all business rules (like weight, distance, and cost calculations) were properly enforced. This included thorough input validation, clear error messages, and robust exception handling for data consistency and user-friendliness. The test flow diagram above illustrates how invalid or incomplete data is processed to guide the user toward correct input.
+
+---
+
+## 🧪 Phase 2 – JUnit Testing
+
+Phase 2 introduced JUnit tests to systematically verify the logic and validation from Phase 1. Test cases covered all possible paths, including boundary conditions for weights and distances, as well as name validations. This phase ensured that the ShippingOrderManager behaves reliably across various scenarios.
+
+▶️ **Video Demonstration**: [Watch on YouTube](https://www.youtube.com/watch?v=42L02K4EYRU)
+
+---
+
+## 🖥️ Phase 3 – JavaFX GUI Integration
+
+In Phase 3, the console-based workflow was enhanced with a modern JavaFX GUI using a dark OBS-inspired theme. This GUI includes a TableView with formatted data, validation dialogs, confirmation prompts, and subtle button hover animations, all integrated seamlessly with the logic layer. It makes the user experience more intuitive and visually appealing.
+
+▶️ **Video Demonstration**: [Watch on YouTube](https://www.youtube.com/watch?v=EZ-ITMU57j8)
+
+---
+
 ## 🖼️ Sample GUI Preview
 
 The JavaFX GUI phase currently looks like this:
