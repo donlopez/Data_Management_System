@@ -137,12 +137,26 @@ If you are running the GUI, please follow these steps to add JavaFX to IntelliJ:
 
 ---
 
+
+## ✅ Phase 4 – Adding a Database
+
+Phase 4 is now complete. The application has been successfully connected to a MySQL database using JDBC. All CRUD operations now persist data in a normalized SQL schema. The `MainController` handles the login screen and database connection flow with live input from users.
+
+- Added MySQL JDBC driver (Connector/J)
+- Updated `MainController.java` to validate DB input
+- Connection errors are handled and displayed in GUI
+- Integrated JavaFX with JDBC using real credentials
+- Modular code supports switching between in-memory and SQL backend
+
+---
+
 ## 🔮 Future Enhancements
 
-### Phase 4 – Database Integration
-- JDBC support with SQL schema
-- Load/save orders to a persistent backend
-- Pre-validation before database write operations
+### Phase 5 – Advanced Features (Planned)
+- Filter, sort, and search shipping records
+- Export to CSV or PDF
+- Role-based login and session management
+- Dashboard with summary metrics and charts
 
 ---
 

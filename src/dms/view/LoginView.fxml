@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="dms.LoginView"
+            stylesheets="@/dms/view/dark-theme.css"
+            prefWidth="700" prefHeight="340">
+
+    <VBox spacing="12" alignment="CENTER"
+          AnchorPane.topAnchor="20" AnchorPane.bottomAnchor="20"
+          AnchorPane.leftAnchor="30" AnchorPane.rightAnchor="30">
+
+        <Label text="🔐 MySQL Database Login" styleClass="title" />
+
+        <TextField fx:id="hostField" promptText="Host (e.g., localhost)" maxWidth="300"/>
+        <TextField fx:id="portField" promptText="Port (e.g., 3306)" maxWidth="300"/>
+        <TextField fx:id="dbNameField" promptText="Database name (e.g., ShippingDMS)" maxWidth="300"/>
+        <TextField fx:id="usernameField" promptText="Username" maxWidth="300"/>
+        <PasswordField fx:id="passwordField" promptText="Password" maxWidth="300"/>
+
+        <Button text="Connect" onAction="#handleConnect" styleClass="btn-add" maxWidth="200"/>
+
+        <Label fx:id="statusLabel" styleClass="error-text" wrapText="true" maxWidth="300"/>
+    </VBox>
+</AnchorPane>

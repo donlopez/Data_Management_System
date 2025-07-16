@@ -2,8 +2,8 @@
 
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.*?>
 
 <BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml"
             fx:controller="dms.MainController"
@@ -28,7 +28,7 @@
         <TableView fx:id="orderTable">
             <columns>
                 <TableColumn fx:id="orderIdColumn" text="Order ID" prefWidth="80"/>
-                <TableColumn fx:id="customerNameColumn" text="Customer Name" prefWidth="180"/>
+                <TableColumn fx:id="customerNameColumn" text="Customer" prefWidth="120"/>
                 <TableColumn fx:id="shipperNameColumn" text="Shipper" prefWidth="120"/>
                 <TableColumn fx:id="weightColumn" text="Weight" prefWidth="100"/>
                 <TableColumn fx:id="distanceColumn" text="Distance" prefWidth="100"/>
@@ -38,7 +38,9 @@
     </center>
 
     <bottom>
-        <Label fx:id="statusLabel" text="Welcome to Shipping Order Manager" />
+        <HBox spacing="20" alignment="CENTER_LEFT" style="-fx-padding: 10;">
+            <Label fx:id="statusLabel" text="Welcome to Shipping Order Manager" />
+            <Label fx:id="connectionStatusLabel" text="🔴 Not connected" />
+        </HBox>
     </bottom>
 </BorderPane>
-

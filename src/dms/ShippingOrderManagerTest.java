@@ -68,7 +68,6 @@ public class ShippingOrderManagerTest {
         ShippingOrder order = manager.findOrder(1);
         assertNotNull(order, "Order should exist after update");
 
-        // Check if the updated fields are reflected correctly
         assertTrue(order.toString().contains("20.0"), "Updated weight should be reflected");
         assertTrue(order.toString().contains("800"), "Updated distance should be reflected");
 
@@ -112,11 +111,9 @@ public class ShippingOrderManagerTest {
     @Test
     @DisplayName("Test loading orders from file")
     public void testLoadOrdersFromFile() {
-        // Load test data from test/resources directory
         File file = new File("test/resources/shipping_orders_sample.txt");
         assertTrue(file.exists(), "Test resource file should exist: " + file.getAbsolutePath());
 
-        // Call method to load orders from file
         manager.loadOrdersFromFile(file.getPath());
 
         List<ShippingOrder> orders = manager.getAllOrders();

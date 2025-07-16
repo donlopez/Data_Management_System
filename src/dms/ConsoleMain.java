@@ -98,18 +98,8 @@ public class ConsoleMain {
                     continue;
                 }
 
-                String customer = parts[1].trim();
-                String shipper = parts[2].trim();
-
-                if (!isValidName(customer)) {
-                    System.out.println("❌ Invalid customer name in line: " + line);
-                    continue;
-                }
-                if (!isValidName(shipper)) {
-                    System.out.println("❌ Invalid shipper name in line: " + line);
-                    continue;
-                }
-
+                String customerName = parts[1].trim();
+                String shipperName = parts[2].trim();
                 double weight;
                 int distance;
 
@@ -121,10 +111,10 @@ public class ConsoleMain {
                     continue;
                 }
 
-                if (manager.addOrder(customer, shipper, weight, distance)) {
-                    System.out.println("✅ Order loaded: " + customer);
+                if (manager.addOrder(customerName, shipperName, weight, distance)) {
+                    System.out.println("✅ Order loaded: " + customerName + " -> " + shipperName);
                 } else {
-                    System.out.println("❌ Invalid weight or distance in line: " + line);
+                    System.out.println("❌ Invalid order in line: " + line);
                 }
             }
             System.out.println("✅ File loading complete.");
@@ -138,12 +128,16 @@ public class ConsoleMain {
      * Prompts user to manually enter order details with full validation.
      */
     private void addOrderManually() {
-        String customer = readValidatedName("Customer name");
-        String shipper = readValidatedName("Shipper name");
+        System.out.print("Customer Name: ");
+        String customerName = scanner.nextLine().trim();
+
+        System.out.print("Shipper Name: ");
+        String shipperName = scanner.nextLine().trim();
+
         double weight = readValidatedDouble("Weight (lbs)", 0.1, 150.0);
         int distance = readValidatedInt("Distance (miles)", 1, 3000);
 
-        if (manager.addOrder(customer, shipper, weight, distance)) {
+        if (manager.addOrder(customerName, shipperName, weight, distance)) {
             System.out.println("✅ Order added successfully!");
         } else {
             System.out.println("❌ Failed to add order. Check business rules.");
@@ -195,28 +189,6 @@ public class ConsoleMain {
         } else {
             System.out.println("❌ Order Not Found");
         }
-    }
-
-    /**
-     * Validates that a user-entered name contains only letters and spaces.
-     */
-    private String readValidatedName(String fieldName) {
-        String name;
-        do {
-            System.out.print(fieldName + ": ");
-            name = scanner.nextLine().trim();
-            if (!isValidName(name)) {
-                System.out.println("❌ " + fieldName + " must only contain letters and spaces.");
-            }
-        } while (!isValidName(name));
-        return name;
-    }
-
-    /**
-     * Returns true if the name contains only letters and spaces.
-     */
-    private boolean isValidName(String name) {
-        return name.matches("[a-zA-Z ]+");
     }
 
     /**

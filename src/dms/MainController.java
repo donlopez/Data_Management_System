@@ -11,10 +11,12 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.File;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
- * Controls the main GUI and handles user interactions for
- * adding, updating, deleting, and loading shipping orders.
+ * JavaFX Controller for the Shipping Order Management GUI.
+ * Handles UI interaction logic including CRUD operations and file loading.
  */
 public class MainController {
 
@@ -26,357 +28,269 @@ public class MainController {
     @FXML private TableColumn<ShippingOrder, Integer> distanceColumn;
     @FXML private TableColumn<ShippingOrder, Double> priceColumn;
     @FXML private Label statusLabel;
+    @FXML private Label connectionStatusLabel;
 
     private ObservableList<ShippingOrder> orderList;
     private ShippingOrderManager shippingOrderManager;
 
-    /**
-     * Initializes the controller after its root element has been processed.
-     */
     @FXML
     private void initialize() {
-        orderIdColumn.setCellValueFactory(new PropertyValueFactory<>("orderID"));
+        orderIdColumn.setCellValueFactory(new PropertyValueFactory<>("orderId"));
         customerNameColumn.setCellValueFactory(new PropertyValueFactory<>("customerName"));
         shipperNameColumn.setCellValueFactory(new PropertyValueFactory<>("shipperName"));
         weightColumn.setCellValueFactory(new PropertyValueFactory<>("weightInPounds"));
         distanceColumn.setCellValueFactory(new PropertyValueFactory<>("distanceInMiles"));
         priceColumn.setCellValueFactory(new PropertyValueFactory<>("shippingCost"));
 
-        // custom formatters for units
+        // Format weight with "lb"
         weightColumn.setCellFactory(_ -> new TableCell<>() {
-            @Override
-            protected void updateItem(Double weight, boolean empty) {
+            @Override protected void updateItem(Double weight, boolean empty) {
                 super.updateItem(weight, empty);
-                if (empty || weight == null) {
-                    setText(null);
-                } else {
-                    setText(String.format("%.1f lb", weight));
-                }
+                setText(empty || weight == null ? null : String.format("%.1f lb", weight));
             }
         });
 
+        // Format distance with "mi"
         distanceColumn.setCellFactory(_ -> new TableCell<>() {
-            @Override
-            protected void updateItem(Integer distance, boolean empty) {
+            @Override protected void updateItem(Integer distance, boolean empty) {
                 super.updateItem(distance, empty);
-                if (empty || distance == null) {
-                    setText(null);
-                } else {
-                    setText(distance + " mi");
-                }
+                setText(empty || distance == null ? null : distance + " mi");
             }
         });
 
+        // Format price with "$"
         priceColumn.setCellFactory(_ -> new TableCell<>() {
-            @Override
-            protected void updateItem(Double price, boolean empty) {
+            @Override protected void updateItem(Double price, boolean empty) {
                 super.updateItem(price, empty);
-                if (empty || price == null) {
-                    setText(null);
-                } else {
-                    setText(String.format("$%.2f", price));
-                }
+                setText(empty || price == null ? null : String.format("$%.2f", price));
             }
         });
 
         shippingOrderManager = new ShippingOrderManager();
-        orderList = FXCollections.observableArrayList(shippingOrderManager.getOrders());
+        orderList = FXCollections.observableArrayList(shippingOrderManager.getAllOrders());
         orderTable.setItems(orderList);
-
-        setStatus("Welcome to Shipping Order Manager");
-
-        orderTable.getSelectionModel().clearSelection();
-        orderTable.getFocusModel().focus(-1);
+        setStatus("Orders loaded from database.");
+        setConnectionStatus();
     }
 
-    /**
-     * Handles adding a new order, either manually or by loading a file.
-     */
+    private void setConnectionStatus() {
+        try {
+            Connection conn = DBConnectionManager.getInstance().getConnection();
+            if (conn != null && !conn.isClosed() && conn.isValid(2)) {
+                connectionStatusLabel.setText("🟢 Connected");
+                connectionStatusLabel.setStyle("-fx-text-fill: green;");
+            } else {
+                connectionStatusLabel.setText("🔴 Not connected");
+                connectionStatusLabel.setStyle("-fx-text-fill: red;");
+            }
+        } catch (SQLException e) {
+            connectionStatusLabel.setText("🔴 Connection error");
+            connectionStatusLabel.setStyle("-fx-text-fill: red;");
+        }
+    }
+
     @FXML
     private void handleAddOrder() {
-        Alert choiceAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        choiceAlert.setTitle("Add Order");
-        choiceAlert.setHeaderText("Choose how to add an order:");
-        choiceAlert.setContentText("Would you like to manually add a new order, or load from a file?");
+        String customerName = promptValidName("Enter Customer Name:");
+        if (customerName == null) return;
 
-        ButtonType manualButton = new ButtonType("Manual Entry");
-        ButtonType fileButton = new ButtonType("Load from File");
-        ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        String shipperName = promptValidName("Enter Shipper Name:");
+        if (shipperName == null) return;
 
-        choiceAlert.getButtonTypes().setAll(manualButton, fileButton, cancelButton);
+        double weight = promptDouble("Enter Weight (1–150 lb):", 1, 150);
+        if (weight == -1) return;
 
-        choiceAlert.showAndWait().ifPresent(response -> {
-            if (response == manualButton) {
-                showAddOrderDialog();
-            } else if (response == fileButton) {
-                handleLoadFile();
-            } else {
-                setStatus("Add order canceled.");
-            }
-        });
+        int distance = promptInt("Enter Distance (1–3000 mi):", 1, 3000);
+        if (distance == -1) return;
+
+        boolean added = shippingOrderManager.addOrder(customerName, shipperName, weight, distance);
+        if (added) {
+            orderList.setAll(shippingOrderManager.getAllOrders());
+            setStatus("Order added.");
+        } else {
+            setStatus("Failed to add order.");
+        }
+        setConnectionStatus();
     }
 
-    /**
-     * Shows dialogs to manually add a new order.
-     */
-    private void showAddOrderDialog() {
-        String customerName;
-        String shipperName;
-        double weight;
-        int distance;
-
-        // customer name
-        while (true) {
-            var dialog = new TextInputDialog();
-            dialog.setTitle("Add Order");
-            dialog.setHeaderText("Enter customer name (letters/spaces/hyphens only, max 30 chars):");
-            dialog.setContentText("Customer name:");
-            var result = dialog.showAndWait();
-            if (result.isEmpty()) {
-                setStatus("Add order canceled.");
-                return;
-            }
-            customerName = result.get().trim();
-            if (customerName.isBlank()) {
-                showValidationError("Customer name cannot be empty.");
-            } else if (!customerName.matches("[a-zA-Z\\s\\-]+")) {
-                showValidationError("Customer name must contain only letters, spaces, or hyphens.");
-            } else if (customerName.length() > 30) {
-                showValidationError("Customer name must be 30 characters or fewer.");
-            } else break;
-        }
-
-        // shipper name
-        while (true) {
-            var dialog = new TextInputDialog();
-            dialog.setTitle("Add Order");
-            dialog.setHeaderText("Enter shipper name (letters/spaces/hyphens only, max 30 chars):");
-            dialog.setContentText("Shipper name:");
-            var result = dialog.showAndWait();
-            if (result.isEmpty()) {
-                setStatus("Add order canceled.");
-                return;
-            }
-            shipperName = result.get().trim();
-            if (shipperName.isBlank()) {
-                showValidationError("Shipper name cannot be empty.");
-            } else if (!shipperName.matches("[a-zA-Z\\s\\-]+")) {
-                showValidationError("Shipper name must contain only letters, spaces, or hyphens.");
-            } else if (shipperName.length() > 30) {
-                showValidationError("Shipper name must be 30 characters or fewer.");
-            } else break;
-        }
-
-        // weight
-        while (true) {
-            var dialog = new TextInputDialog();
-            dialog.setTitle("Add Order");
-            dialog.setHeaderText("Enter weight (1–150 pounds):");
-            dialog.setContentText("Weight in pounds:");
-            var result = dialog.showAndWait();
-            if (result.isEmpty()) {
-                setStatus("Add order canceled.");
-                return;
-            }
-            try {
-                weight = Double.parseDouble(result.get().trim());
-                if (weight <= 0 || weight > 150) {
-                    showValidationError("Weight must be between 1 and 150 pounds.");
-                } else break;
-            } catch (NumberFormatException e) {
-                showValidationError("Weight must be numeric.");
-            }
-        }
-
-        // distance
-        while (true) {
-            var dialog = new TextInputDialog();
-            dialog.setTitle("Add Order");
-            dialog.setHeaderText("Enter distance (1–3000 miles):");
-            dialog.setContentText("Distance in miles:");
-            var result = dialog.showAndWait();
-            if (result.isEmpty()) {
-                setStatus("Add order canceled.");
-                return;
-            }
-            try {
-                distance = Integer.parseInt(result.get().trim());
-                if (distance < 1 || distance > 3000) {
-                    showValidationError("Distance must be between 1 and 3000 miles.");
-                } else break;
-            } catch (NumberFormatException e) {
-                showValidationError("Distance must be numeric.");
-            }
-        }
-
-        shippingOrderManager.addOrder(customerName, shipperName, weight, distance);
-        orderList.setAll(shippingOrderManager.getOrders());
-        setStatus("Order added successfully.");
-    }
-
-    /**
-     * Handles updating the selected order.
-     */
     @FXML
     private void handleUpdateOrder() {
         var selected = orderTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            setStatus("Please select an order to update.");
+            setStatus("Select an order to update.");
             return;
         }
 
-        double newWeight = selected.getWeightInPounds();
-        int newDistance = selected.getDistanceInMiles();
+        double newWeight = promptDouble("Update Weight (1–150 lb):", 1, 150);
+        if (newWeight == -1) return;
 
-        // weight
-        while (true) {
-            var dialog = new TextInputDialog(String.valueOf(newWeight));
-            dialog.setTitle("Update Order");
-            dialog.setHeaderText("Update weight (1–150 pounds):");
-            dialog.setContentText("New weight:");
-            var result = dialog.showAndWait();
-            if (result.isEmpty()) {
-                setStatus("Update canceled.");
-                return;
-            }
-            try {
-                newWeight = Double.parseDouble(result.get().trim());
-                if (newWeight <= 0 || newWeight > 150) {
-                    showValidationError("Weight must be between 1 and 150 pounds.");
-                } else break;
-            } catch (NumberFormatException e) {
-                showValidationError("Weight must be numeric.");
-            }
+        int newDistance = promptInt("Update Distance (1–3000 mi):", 1, 3000);
+        if (newDistance == -1) return;
+
+        boolean updated = shippingOrderManager.updateOrder(selected.getOrderId(), newWeight, newDistance);
+        if (updated) {
+            orderList.setAll(shippingOrderManager.getAllOrders());
+            setStatus("Order updated.");
+        } else {
+            setStatus("Update failed.");
         }
-
-        // distance
-        while (true) {
-            var dialog = new TextInputDialog(String.valueOf(newDistance));
-            dialog.setTitle("Update Order");
-            dialog.setHeaderText("Update distance (1–3000 miles):");
-            dialog.setContentText("New distance:");
-            var result = dialog.showAndWait();
-            if (result.isEmpty()) {
-                setStatus("Update canceled.");
-                return;
-            }
-            try {
-                newDistance = Integer.parseInt(result.get().trim());
-                if (newDistance < 1 || newDistance > 3000) {
-                    showValidationError("Distance must be between 1 and 3000 miles.");
-                } else break;
-            } catch (NumberFormatException e) {
-                showValidationError("Distance must be numeric.");
-            }
-        }
-
-        selected.setWeightInPounds(newWeight);
-        selected.setDistanceInMiles(newDistance);
-        orderList.setAll(shippingOrderManager.getOrders());
-        setStatus("Order ID " + selected.getOrderID() + " updated successfully.");
+        setConnectionStatus();
     }
 
-    /**
-     * Displays a reusable validation alert.
-     */
+    @FXML
+    private void handleDeleteOrder() {
+        var selected = orderTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            setStatus("Select an order to delete.");
+            return;
+        }
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Delete Order");
+        alert.setHeaderText("Are you sure you want to delete this order?");
+        alert.setContentText("Order ID: " + selected.getOrderId());
+
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                boolean deleted = shippingOrderManager.deleteOrder(selected.getOrderId());
+                if (deleted) {
+                    orderList.setAll(shippingOrderManager.getAllOrders());
+                    setStatus("Order deleted.");
+                } else {
+                    setStatus("Delete failed.");
+                }
+                setConnectionStatus();
+            } else {
+                setStatus("Delete canceled.");
+            }
+        });
+    }
+
+    @FXML
+    private void handleLoadFile() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Select Order File");
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
+        File file = chooser.showOpenDialog(new Stage());
+
+        if (file != null) {
+            shippingOrderManager.loadOrdersFromFile(file.getAbsolutePath());
+            orderList.setAll(shippingOrderManager.getAllOrders());
+            setStatus("Orders loaded from file.");
+        } else {
+            setStatus("No file selected.");
+        }
+        setConnectionStatus();
+    }
+
+    private int promptInt(String message, int min, int max) {
+        while (true) {
+            TextInputDialog dialog = new TextInputDialog();
+            dialog.setTitle("Input Required");
+            dialog.setHeaderText(message);
+            var result = dialog.showAndWait();
+            if (result.isEmpty()) {
+                setStatus("Canceled.");
+                return -1;
+            }
+            try {
+                int value = Integer.parseInt(result.get().trim());
+                if (value < min || value > max) {
+                    showValidationError("Value must be between " + min + " and " + max + ".");
+                } else {
+                    return value;
+                }
+            } catch (NumberFormatException e) {
+                showValidationError("Input must be numeric.");
+            }
+        }
+    }
+
+    private double promptDouble(String message, double min, double max) {
+        while (true) {
+            TextInputDialog dialog = new TextInputDialog();
+            dialog.setTitle("Input Required");
+            dialog.setHeaderText(message);
+            var result = dialog.showAndWait();
+            if (result.isEmpty()) {
+                setStatus("Canceled.");
+                return -1;
+            }
+            try {
+                double value = Double.parseDouble(result.get().trim());
+                if (value < min || value > max) {
+                    showValidationError("Value must be between " + min + " and " + max + ".");
+                } else {
+                    return value;
+                }
+            } catch (NumberFormatException e) {
+                showValidationError("Input must be numeric.");
+            }
+        }
+    }
+
+    private String promptValidName(String message) {
+        while (true) {
+            TextInputDialog dialog = new TextInputDialog();
+            dialog.setTitle("Input Required");
+            dialog.setHeaderText(message);
+            var result = dialog.showAndWait();
+
+            if (result.isEmpty()) {
+                setStatus("Canceled.");
+                return null;
+            }
+
+            String name = result.get().trim();
+
+            // Only allow letters and a single space between words
+            if (name.isEmpty()) {
+                showValidationError("Name cannot be blank.");
+            } else if (name.length() > 30) {
+                showValidationError("Name must be 30 characters or fewer.");
+            } else if (!name.matches("^[A-Za-z]+( [A-Za-z]+)*$")) {
+                showValidationError("Only letters and a single space allowed. No numbers or symbols.");
+            } else {
+                return name;
+            }
+        }
+    }
+
     private void showValidationError(String message) {
-        var alert = new Alert(Alert.AlertType.ERROR);
+        Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Invalid Input");
         alert.setHeaderText(message);
         alert.showAndWait();
     }
 
-    /**
-     * Handles loading orders from a text file.
-     */
-    @FXML
-    private void handleLoadFile() {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("Select Orders File");
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
-
-        File file = chooser.showOpenDialog(new Stage());
-
-        if (file != null) {
-            if (!file.getName().toLowerCase().endsWith(".txt")) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Invalid File Format");
-                alert.setHeaderText("Unsupported File Type");
-                alert.setContentText("Please upload a .txt file as instructed by the administrator.");
-                alert.showAndWait();
-                setStatus("Load canceled: wrong file type.");
-                return;
-            }
-            shippingOrderManager.loadOrdersFromFile(file.getAbsolutePath());
-            orderList.setAll(shippingOrderManager.getOrders());
-
-            if (orderList.isEmpty()) {
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("Invalid File Content");
-                alert.setHeaderText("No valid shipping orders found");
-                alert.setContentText("The selected .txt file does not contain valid order data. Please check the file contents and try again as instructed by the administrator.");
-                alert.showAndWait();
-                setStatus("Load failed: no valid data found.");
-            } else {
-                setStatus("Orders loaded from file: " + file.getName());
-            }
-        } else {
-            setStatus("No file selected.");
-        }
-    }
-
-    /**
-     * Handles deleting a selected order.
-     */
-    @FXML
-    private void handleDeleteOrder() {
-        var selected = orderTable.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            var confirm = new Alert(Alert.AlertType.CONFIRMATION);
-            confirm.setTitle("Confirm Delete");
-            confirm.setHeaderText("Are you sure you want to delete this order?");
-            confirm.setContentText(selected.toString());
-            confirm.showAndWait().ifPresent(response -> {
-                if (response == ButtonType.OK) {
-                    shippingOrderManager.deleteOrder(selected.getOrderID());
-                    orderList.setAll(shippingOrderManager.getOrders());
-                    setStatus("Order ID " + selected.getOrderID() + " deleted.");
-                } else {
-                    setStatus("Delete canceled.");
-                }
-            });
-        } else {
-            setStatus("Please select an order to delete.");
-        }
-    }
-
-    /**
-     * Handles exiting the app.
-     */
     @FXML
     private void handleExit() {
+        try {
+            Connection conn = DBConnectionManager.getInstance().getConnection();
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+                System.out.println("Database connection closed.");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error closing connection: " + e.getMessage());
+        }
+
         System.exit(0);
     }
 
-    /**
-     * Sets the status label with a growth/shrink animation.
-     */
     private void setStatus(String message) {
         statusLabel.setText(message);
         animateStatus();
     }
 
-    /**
-     * Makes the status label grow/shrink to catch the eye.
-     */
     private void animateStatus() {
-        var scale = new ScaleTransition(Duration.millis(400), statusLabel);
-        scale.setFromX(1.0);
-        scale.setFromY(1.0);
-        scale.setToX(2.0);
-        scale.setToY(2.0);
-        scale.setCycleCount(2);
-        scale.setAutoReverse(true);
-        scale.play();
+        ScaleTransition anim = new ScaleTransition(Duration.millis(400), statusLabel);
+        anim.setFromX(1.0);
+        anim.setFromY(1.0);
+        anim.setToX(2.0);
+        anim.setToY(2.0);
+        anim.setCycleCount(2);
+        anim.setAutoReverse(true);
+        anim.play();
     }
 }

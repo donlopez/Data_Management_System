@@ -1,127 +1,154 @@
 package dms;
 
 /**
- * Represents a shipping order with customer information, shipping details, and cost calculation.
+ * Represents a shipping order with customer and shipper IDs, shipping details, and cost calculation.
  * This class holds all the data for a single order and includes methods to calculate shipping cost.
  *
- * @author Julio Lopez
- * @version 1.0
+ * Updated to support normalized database design with JOINed display (customer/shipper names).
+ *
+ * Author: Julio Lopez
+ * Version: 2.1
  */
 public class ShippingOrder {
-    private int orderID;
-    private String customerName;
-    private String shipperName;
-    private double weightInPounds;
-    private int distanceInMiles;
+    private int orderId;             // Unique identifier for the order (order_id in DB)
+    private int customerId;          // Foreign key to Customer table
+    private int shipperId;           // Foreign key to Shipper table
+    private double weightInPounds;   // Weight of the shipment
+    private int distanceInMiles;     // Shipping distance
+    private double shippingCost;     // Calculated and cached cost
+
+    private String customerName;     // Display name of customer (optional)
+    private String shipperName;      // Display name of shipper (optional)
 
     /**
-     * Constructor for objects of class ShippingOrder.
-     *
-     * @param orderID unique identifier for the order
-     * @param customerName name of the customer
-     * @param shipperName name of the shipping company
-     * @param weightInPounds package weight in pounds
-     * @param distanceInMiles shipping distance in miles
+     * Constructor for core database values (without names).
      */
-    public ShippingOrder(int orderID, String customerName, String shipperName, double weightInPounds, int distanceInMiles) {
-        this.orderID = orderID;
+    public ShippingOrder(int orderId, int customerId, int shipperId, double weightInPounds, int distanceInMiles) {
+        this.orderId = orderId;
+        this.customerId = customerId;
+        this.shipperId = shipperId;
+        this.weightInPounds = weightInPounds;
+        this.distanceInMiles = distanceInMiles;
+        this.shippingCost = calculateShippingCost();
+    }
+
+    /**
+     * Extended constructor for display data with names and cost (used in display tables).
+     */
+    public ShippingOrder(int orderId, String customerName, String shipperName, double weightInPounds, int distanceInMiles, double shippingCost) {
+        this.orderId = orderId;
         this.customerName = customerName;
         this.shipperName = shipperName;
         this.weightInPounds = weightInPounds;
         this.distanceInMiles = distanceInMiles;
+        this.shippingCost = shippingCost;
     }
 
     /**
-     * Returns customer name.
-     *
-     * @return customer name
+     * Extended constructor for JOINed queries (includes IDs + names).
      */
-    public String getCustomerName() {
-        return customerName;
+    public ShippingOrder(int orderId, int customerId, int shipperId, double weightInPounds, int distanceInMiles,
+                         String customerName, String shipperName) {
+        this(orderId, customerId, shipperId, weightInPounds, distanceInMiles);
+        this.customerName = customerName;
+        this.shipperName = shipperName;
     }
 
     /**
-     * Returns order ID.
-     *
-     * @return order ID
+     * Fully extended constructor for JOINed queries (includes IDs + names + cost).
      */
-    public int getOrderID() {
-        return orderID;
+    public ShippingOrder(int orderId, int customerId, int shipperId, double weightInPounds, int distanceInMiles,
+                         String customerName, String shipperName, double shippingCost) {
+        this.orderId = orderId;
+        this.customerId = customerId;
+        this.shipperId = shipperId;
+        this.weightInPounds = weightInPounds;
+        this.distanceInMiles = distanceInMiles;
+        this.customerName = customerName;
+        this.shipperName = shipperName;
+        this.shippingCost = shippingCost;
     }
 
-    /**
-     * Calculates and returns shipping cost based on weight and distance.
-     *
-     * @return calculated shipping cost
-     */
-    public double calculateShippingCost() {
-        double costPerPound = 0.05;
-        double costPerMile = 0.10;
-        double baseCost = 5.00;
-        return baseCost + (weightInPounds * costPerPound) + (distanceInMiles * costPerMile);
+    // --- Getters and Setters ---
+
+    public int getOrderId() {
+        return orderId;
     }
 
-    /**
-     * JavaFX-friendly getter to display shipping cost in a TableView column.
-     *
-     * @return calculated shipping cost
-     */
-    public double getShippingCost() {
-        return calculateShippingCost();
+    public int getCustomerId() {
+        return customerId;
     }
 
-    /**
-     * Returns weight in pounds.
-     *
-     * @return weight in pounds
-     */
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
+    }
+
+    public int getShipperId() {
+        return shipperId;
+    }
+
+    public void setShipperId(int shipperId) {
+        this.shipperId = shipperId;
+    }
+
     public double getWeightInPounds() {
         return weightInPounds;
     }
 
-    /**
-     * Returns distance in miles.
-     *
-     * @return distance in miles
-     */
+    public void setWeightInPounds(double weightInPounds) {
+        this.weightInPounds = weightInPounds;
+        this.shippingCost = calculateShippingCost(); // Recalculate cost
+    }
+
     public int getDistanceInMiles() {
         return distanceInMiles;
     }
 
-    /**
-     * Sets weight in pounds.
-     *
-     * @param weightInPounds new weight value
-     */
-    public void setWeightInPounds(double weightInPounds) {
-        this.weightInPounds = weightInPounds;
-    }
-
-    /**
-     * Sets distance in miles.
-     *
-     * @param distanceInMiles new distance value
-     */
     public void setDistanceInMiles(int distanceInMiles) {
         this.distanceInMiles = distanceInMiles;
+        this.shippingCost = calculateShippingCost(); // Recalculate cost
     }
 
-    /**
-     * Returns shipper name.
-     *
-     * @return shipper name
-     */
+    public double getShippingCost() {
+        return shippingCost;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
     public String getShipperName() {
         return shipperName;
     }
 
+    public void setShipperName(String shipperName) {
+        this.shipperName = shipperName;
+    }
+
     /**
-     * Returns a string representation of the shipping order.
-     *
-     * @return order details as string
+     * Calculates shipping cost using base + weight + distance multipliers.
      */
+    public double calculateShippingCost() {
+        double base = 5.00;
+        double perPound = 0.05;
+        double perMile = 0.10;
+        return base + (weightInPounds * perPound) + (distanceInMiles * perMile);
+    }
+
+    /**
+     * For debug/logging purposes.
+     */
+    @Override
     public String toString() {
-        return "Order ID: " + orderID + ", Customer: " + customerName + ", Shipper: " + shipperName +
-                ", Weight: " + weightInPounds + " lbs, Distance: " + distanceInMiles + " miles, Cost: $" + calculateShippingCost();
+        return "Order ID: " + orderId +
+                ", Customer: " + (customerName != null ? customerName : customerId) +
+                ", Shipper: " + (shipperName != null ? shipperName : shipperId) +
+                ", Weight: " + weightInPounds + " lb" +
+                ", Distance: " + distanceInMiles + " mi" +
+                ", Cost: $" + String.format("%.2f", shippingCost);
     }
 }
