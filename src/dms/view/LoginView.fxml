@@ -1,29 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+    LoginView.fxml
+    Defines the UI for connecting to a MySQL database.
+    Users enter host, port, database name, username, and password,
+    then click "Connect" to establish the connection.
+
+    Controller: dms.LoginView
+    Part of the Data Management System (DMS) application. 🔐
+-->
+
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<!--
+    Root layout using AnchorPane.
+    Anchors VBox to all edges to support flexible resizing.
+-->
 <AnchorPane xmlns="http://javafx.com/javafx/8"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="dms.LoginView"
             stylesheets="@/dms/view/dark-theme.css"
             prefWidth="700" prefHeight="340">
 
+    <!--
+        VBox: Stacks all login fields and controls vertically.
+        Centered alignment with spacing for clean layout.
+    -->
     <VBox spacing="12" alignment="CENTER"
           AnchorPane.topAnchor="20" AnchorPane.bottomAnchor="20"
           AnchorPane.leftAnchor="30" AnchorPane.rightAnchor="30">
 
+        <!-- Title label with emoji for friendly UX -->
         <Label text="🔐 MySQL Database Login" styleClass="title" />
 
+        <!-- Input for database host (e.g., 'localhost' or IP) -->
         <TextField fx:id="hostField" promptText="Host (e.g., localhost)" maxWidth="300"/>
+
+        <!-- Input for database port (typically 3306) -->
         <TextField fx:id="portField" promptText="Port (e.g., 3306)" maxWidth="300"/>
+
+        <!-- Input for the name of the target MySQL database -->
         <TextField fx:id="dbNameField" promptText="Database name (e.g., ShippingDMS)" maxWidth="300"/>
+
+        <!-- Input for MySQL username -->
         <TextField fx:id="usernameField" promptText="Username" maxWidth="300"/>
+
+        <!-- Secure password input for MySQL password -->
         <PasswordField fx:id="passwordField" promptText="Password" maxWidth="300"/>
 
+        <!--
+            Button to attempt connection.
+            Calls handleConnect() in LoginView controller.
+        -->
         <Button text="Connect" onAction="#handleConnect" styleClass="btn-add" maxWidth="200"/>
 
+        <!-- Dynamic label for success/error connection feedback -->
         <Label fx:id="statusLabel" styleClass="error-text" wrapText="true" maxWidth="300"/>
+
     </VBox>
 </AnchorPane>

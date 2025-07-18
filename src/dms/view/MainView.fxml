@@ -1,45 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+    MainView.fxml
+    This FXML file defines the main user interface for the Data Management System (DMS),
+    including a toolbar for actions and a table to display shipping order details.
+
+    Associated Controller: dms.MainController
+    This view allows users to add, update, delete, and view orders in a centralized layout.
+-->
+
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.*?>
 
+<!-- Root layout uses BorderPane for structured positioning (top, left, center, bottom) -->
 <BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml"
             fx:controller="dms.MainController"
             stylesheets="@/dms/view/dark-theme.css">
 
+    <!-- Top section with title label centered -->
     <top>
         <HBox alignment="CENTER">
+            <!-- Page Title Label -->
             <Label text="📦 Data Management System (Shipping Orders)" styleClass="title"/>
         </HBox>
     </top>
 
+    <!-- Left toolbar with CRUD operation buttons -->
     <left>
         <VBox spacing="5" styleClass="toolbar">
+            <!-- Add a new shipping order -->
             <Button text="Add Order" onAction="#handleAddOrder" styleClass="btn-add"/>
+            <!-- Delete the selected shipping order -->
             <Button text="Delete Order" onAction="#handleDeleteOrder" styleClass="btn-delete"/>
+            <!-- Update the selected shipping order -->
             <Button text="Update Order" onAction="#handleUpdateOrder" styleClass="btn-update"/>
+            <!-- Exit the application -->
             <Button text="Exit" onAction="#handleExit" styleClass="btn-exit"/>
         </VBox>
     </left>
 
+    <!-- Center area displaying the shipping orders in a table -->
     <center>
         <TableView fx:id="orderTable">
             <columns>
+                <!-- Order ID column -->
                 <TableColumn fx:id="orderIdColumn" text="Order ID" prefWidth="80"/>
+                <!-- Customer name column -->
                 <TableColumn fx:id="customerNameColumn" text="Customer" prefWidth="120"/>
+                <!-- Shipper name column -->
                 <TableColumn fx:id="shipperNameColumn" text="Shipper" prefWidth="120"/>
+                <!-- Shipment weight column -->
                 <TableColumn fx:id="weightColumn" text="Weight" prefWidth="100"/>
+                <!-- Shipment distance column -->
                 <TableColumn fx:id="distanceColumn" text="Distance" prefWidth="100"/>
+                <!-- Calculated price column -->
                 <TableColumn fx:id="priceColumn" text="Price" prefWidth="120"/>
             </columns>
         </TableView>
     </center>
 
+    <!-- Bottom status bar for user feedback and connection status -->
     <bottom>
         <HBox spacing="20" alignment="CENTER_LEFT" style="-fx-padding: 10;">
+            <!-- Label to display user messages or application state -->
             <Label fx:id="statusLabel" text="Welcome to Shipping Order Manager" />
+            <!-- Label to reflect database connection status -->
             <Label fx:id="connectionStatusLabel" text="🔴 Not connected" />
         </HBox>
     </bottom>

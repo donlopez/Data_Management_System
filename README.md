@@ -1,26 +1,25 @@
 # 📦 Data Management System (Shipping Orders)
 
-This project is a **Java-based console + JavaFX GUI application** for managing small-package shipping orders (like Amazon or e-commerce). It demonstrates strong **object-oriented design**, **layered architecture**, and robust **input validation**.
+A **Java-based console + JavaFX GUI application** to manage small-package shipping orders (e.g., e-commerce or Amazon-style workflows). This project emphasizes **object-oriented design**, a **layered architecture**, and strong **input validation**.
 
 ---
 
 ## 🚀 Features
 
-- Add, view, update, and delete shipping orders
-- Input validation: blocks blank entries, non-names, or invalid numbers
-- Error handling for all operations (missing ID, bad format, etc.)
-- Weight validation: 0.1–150 lbs
-- Distance validation: up to 3000 miles
-- Cost calculation based on realistic shipping rate
-- Consistent and user-friendly JavaFX GUI
-- Styled theme inspired by **OBS** (bluish dark theme with modern shadows)
-- Clear messages for all actions (success, warning, failure)
+- Create, view, update, and delete shipping orders
+- Real-time input validation (no blanks, invalid names, or bad numbers)
+- Robust error handling with meaningful feedback
+- Weight range enforced: 0.1–150 lbs
+- Distance limit enforced: up to 3000 miles
+- Smart shipping cost calculation using realistic rates
+- Clean, dark-themed JavaFX interface inspired by **OBS Studio**
+- Clear visual indicators for success, warnings, and errors
 
 ---
 
 ## 📐 Layered Architecture
 
-The app is divided into three layers for maintainability and scalability:
+The codebase is cleanly structured into three layers:
 
 ```
 ├── UI Layer (JavaFX + console)
@@ -32,27 +31,24 @@ The app is divided into three layers for maintainability and scalability:
 ---
 
 ### ✅ UI Layer
-- JavaFX GUI with stylish dark theme similar to OBS Studio
-- Command-line fallback using `Scanner` and `System.out`
-- Buttons for CRUD
-- TableView to list orders
-- Dialogs for validation, confirmations, and errors
+- JavaFX GUI with an OBS-inspired dark theme
+- Command-line fallback with `Scanner` + `System.out`
+- Full CRUD buttons and TableView display
+- Alert dialogs for validation and confirmations
 
 ### ✅ Logic Layer
-- Encapsulated in `ShippingOrderManager`
-- Performs all CRUD operations
-- Returns boolean/object results
-- Enforces business rules: weight, distance, ID lookups
+- Centralized in `ShippingOrderManager`
+- Handles all business rules and CRUD operations
 
 ### ✅ Data Layer
-- Stores orders in a dynamic in-memory list
-- Easily replaceable with SQL backend (JDBC-ready structure)
+- In-memory `ArrayList<ShippingOrder>` storage
+- Easily swappable for JDBC-based SQL backend
 
 ---
 
 ## 📊 UML Diagram
 
-The following diagram shows the class relationships and method design:
+Class structure and relationships:
 
 ![UML Diagram](UML/UML_Latest.jpeg)
 
@@ -60,7 +56,7 @@ The following diagram shows the class relationships and method design:
 
 ## 🗺️ Test Flow Diagram (Flowchart)
 
-The following flowchart illustrates the full test flow and input validation logic:
+Full test/validation logic shown here:
 
 ![Flowchart](UML/FlowChartFinal.svg)
 
@@ -68,29 +64,27 @@ The following flowchart illustrates the full test flow and input validation logi
 
 ## 🧪 Phase 1 – Logic and Input Validation
 
-Phase 1 focused on designing and implementing the core shipping order logic using Java classes, ensuring all business rules (like weight, distance, and cost calculations) were properly enforced. This included thorough input validation, clear error messages, and robust exception handling for data consistency and user-friendliness. The test flow diagram above illustrates how invalid or incomplete data is processed to guide the user toward correct input.
+Implemented core logic with plain Java classes. Business rules like valid weight/distance were enforced with strong input validation and exception handling for smooth execution.
 
 ---
 
 ## 🧪 Phase 2 – JUnit Testing
 
-Phase 2 introduced JUnit tests to systematically verify the logic and validation from Phase 1. Test cases covered all possible paths, including boundary conditions for weights and distances, as well as name validations. This phase ensured that the ShippingOrderManager behaves reliably across various scenarios.
+JUnit tests validate all logic from Phase 1. Covers normal cases, edge inputs, and error handling to ensure method reliability.
 
-▶️ **Video Demonstration**: [Watch on YouTube](https://www.youtube.com/watch?v=42L02K4EYRU)
+▶️ **Video Demo**: [Watch on YouTube](https://www.youtube.com/watch?v=42L02K4EYRU)
 
 ---
 
 ## 🖥️ Phase 3 – JavaFX GUI Integration
 
-In Phase 3, the console-based workflow was enhanced with a modern JavaFX GUI using a dark OBS-inspired theme. This GUI includes a TableView with formatted data, validation dialogs, confirmation prompts, and subtle button hover animations, all integrated seamlessly with the logic layer. It makes the user experience more intuitive and visually appealing.
+Transitioned to a modern, user-friendly JavaFX interface with dark mode, TableView components, and sleek visuals.
 
-▶️ **Video Demonstration**: [Watch on YouTube](https://www.youtube.com/watch?v=EZ-ITMU57j8)
+▶️ **Video Demo**: [Watch on YouTube](https://www.youtube.com/watch?v=EZ-ITMU57j8)
 
 ---
 
 ## 🖼️ Sample GUI Preview
-
-The JavaFX GUI phase currently looks like this:
 
 ![GUI Sample](UML/GUI.png)
 
@@ -98,75 +92,70 @@ The JavaFX GUI phase currently looks like this:
 
 ## ⚙️ JavaFX Setup Instructions
 
-If you are running the GUI, please follow these steps to add JavaFX to IntelliJ:
+To run the GUI in IntelliJ:
 
-1. Download the JavaFX SDK from [https://gluonhq.com/products/javafx/](https://gluonhq.com/products/javafx/).
-2. Unzip the folder to a known location.
+1. Download JavaFX SDK: [gluonhq.com/products/javafx](https://gluonhq.com/products/javafx/)
+2. Extract the SDK
 3. In IntelliJ:
     - Go to **File > Project Structure > Libraries**
-    - Click the **+** button and select the `lib` directory inside the JavaFX SDK you unzipped
-    - Add all `.jar` files from that `lib` folder
-4. Finally, in **Run > Edit Configurations**, add the following to VM options:
+    - Add all `.jar` files from the `lib` folder
+4. Add VM options in **Run > Edit Configurations**:
     - Add all `--module-path <your_path_here>/lib --add-modules javafx.controls,javafx.fxml` (Replace `<your_path_here>` with the actual path where you placed the JavaFX SDK.)
 
-    > **Note:** If you do not see the VM options field, click  
-    > **Modify Options > Add VM options**  
-    > at the top of the configuration window to make it visible.
+
+> If VM options aren’t visible, click  
+> **Modify Options > Add VM options**
 
 ---
 
 ## 🧠 Input Validation Examples
 
-- **Customer/Shipper names** must contain only letters and spaces
-- **Weight** must be a valid number between `0.1` and `150`
-- **Distance** must be a whole number between `1` and `3000`
-- **Blank entries** or malformed input trigger warnings
-- **Invalid order IDs** show appropriate error messages
+- **Names**: Alphabetic only, max 30 characters
+- **Weight**: Between `0.1` and `150` lbs
+- **Distance**: Between `1` and `3000` miles
+- **Blank/invalid entries** trigger warnings
+- **Bad IDs** trigger clear error messages
 
 ---
 
 ## 📝 Latest Updates
 
-- Phase 1 (Logic) finished with robust validation and error handling.
-- Phase 2 (JUnit testing) implemented for all critical business rules.
-- Phase 3 (GUI) completed with a modern, user-friendly OBS-inspired theme.
-- Buttons have subtle drop shadows, hover transitions, and consistent colors.
-- JavaFX TableView now includes units (e.g., lb, mi, $) and 2-decimal price formatting.
-- Smoothed styling with improved fonts and better focus loss handling on selection.
-- Application is fully ready for next step of JDBC database integration.
+- ✅ Phase 1: Business logic + validation complete
+- ✅ Phase 2: All core methods tested via JUnit
+- ✅ Phase 3: Full-featured JavaFX UI implemented
+- 🎨 Enhanced styling with shadows and effects
+- 🏁 Finalized JDBC integration for live data handling
 
 ---
 
-
 ## ✅ Phase 4 – Adding a Database
 
-Phase 4 is now complete. The application has been successfully connected to a MySQL database using JDBC. All CRUD operations now persist data in a normalized SQL schema. The `MainController` handles the login screen and database connection flow with live input from users.
+JDBC support is live! App now persists data to MySQL:
 
-- Added MySQL JDBC driver (Connector/J)
-- Updated `MainController.java` to validate DB input
-- Connection errors are handled and displayed in GUI
-- Integrated JavaFX with JDBC using real credentials
-- Modular code supports switching between in-memory and SQL backend
+- JDBC driver added
+- `MainController.java` prompts for DB login
+- UI displays connection errors cleanly
+- Seamless JavaFX ↔ SQL communication
+- Modular backend ready for future data sources
 
 ---
 
 ## 🔮 Future Enhancements
 
 ### Phase 5 – Advanced Features (Planned)
-- Filter, sort, and search shipping records
-- Export to CSV or PDF
-- Role-based login and session management
-- Dashboard with summary metrics and charts
+
+- Search, filter, and sort orders by customer, shipper, weight, etc.
+- Export data to CSV or PDF
+- Role-based login with sessions
+- Admin dashboard with visual metrics
 
 ---
 
 ## 👨‍💻 Author
 
-**Julio Lopez**
-
+**Julio Lopez**  
 📎 [LinkedIn Profile](https://www.linkedin.com/in/julio-lopez-380937282/)
 
 ---
 
-> This project was developed with a focus on clean separation of concerns, testability, and modern UI. Each logic method is test-driven and designed for future growth with a professional-quality look and feel.
-
+> Built for clarity, modularity, and scale — this system is test-driven and designed with clean architecture principles, ready for real-world deployment.

@@ -15,11 +15,29 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * JavaFX Controller for the Shipping Order Management GUI.
- * Handles UI interaction logic including CRUD operations and file loading.
+ * JavaFX Controller for the main Shipping Order Management interface.
+ * Handles user interaction with the GUI and delegates data operations to {@link ShippingOrderManager}.
+ *
+ * Responsibilities include:
+ * <ul>
+ *     <li>Initializing table columns</li>
+ *     <li>Adding, updating, deleting, and loading orders</li>
+ *     <li>Displaying connection and status messages</li>
+ * </ul>
+ *
+ * Author: Julio Lopez
+ * Version: 1.0
  */
 public class MainController {
 
+    /**
+     * Default constructor for MainController.
+     */
+    public MainController() {
+        // No initialization logic needed
+    }
+
+    // Table and column bindings for displaying order data
     @FXML private TableView<ShippingOrder> orderTable;
     @FXML private TableColumn<ShippingOrder, Integer> orderIdColumn;
     @FXML private TableColumn<ShippingOrder, String> customerNameColumn;
@@ -27,14 +45,22 @@ public class MainController {
     @FXML private TableColumn<ShippingOrder, Double> weightColumn;
     @FXML private TableColumn<ShippingOrder, Integer> distanceColumn;
     @FXML private TableColumn<ShippingOrder, Double> priceColumn;
+
+    // UI labels for dynamic user feedback
     @FXML private Label statusLabel;
     @FXML private Label connectionStatusLabel;
 
+    // Data management layer and observable list for table refresh
     private ObservableList<ShippingOrder> orderList;
     private ShippingOrderManager shippingOrderManager;
 
+    /**
+     * Initializes the UI, binds table columns, applies formatting,
+     * loads data from the database, and checks connection status.
+     */
     @FXML
     private void initialize() {
+        // Bind columns
         orderIdColumn.setCellValueFactory(new PropertyValueFactory<>("orderId"));
         customerNameColumn.setCellValueFactory(new PropertyValueFactory<>("customerName"));
         shipperNameColumn.setCellValueFactory(new PropertyValueFactory<>("shipperName"));
@@ -42,7 +68,7 @@ public class MainController {
         distanceColumn.setCellValueFactory(new PropertyValueFactory<>("distanceInMiles"));
         priceColumn.setCellValueFactory(new PropertyValueFactory<>("shippingCost"));
 
-        // Format weight with "lb"
+        // Format columns
         weightColumn.setCellFactory(_ -> new TableCell<>() {
             @Override protected void updateItem(Double weight, boolean empty) {
                 super.updateItem(weight, empty);
@@ -50,7 +76,6 @@ public class MainController {
             }
         });
 
-        // Format distance with "mi"
         distanceColumn.setCellFactory(_ -> new TableCell<>() {
             @Override protected void updateItem(Integer distance, boolean empty) {
                 super.updateItem(distance, empty);
@@ -58,7 +83,6 @@ public class MainController {
             }
         });
 
-        // Format price with "$"
         priceColumn.setCellFactory(_ -> new TableCell<>() {
             @Override protected void updateItem(Double price, boolean empty) {
                 super.updateItem(price, empty);
@@ -66,13 +90,18 @@ public class MainController {
             }
         });
 
+        // Load orders
         shippingOrderManager = new ShippingOrderManager();
         orderList = FXCollections.observableArrayList(shippingOrderManager.getAllOrders());
         orderTable.setItems(orderList);
+
         setStatus("Orders loaded from database.");
         setConnectionStatus();
     }
 
+    /**
+     * Updates the connection status label based on current database state.
+     */
     private void setConnectionStatus() {
         try {
             Connection conn = DBConnectionManager.getInstance().getConnection();
@@ -89,6 +118,10 @@ public class MainController {
         }
     }
 
+    /**
+     * Handles the "Add Order" button. Prompts user for valid input,
+     * adds the order, and refreshes the table.
+     */
     @FXML
     private void handleAddOrder() {
         String customerName = promptValidName("Enter Customer Name:");
@@ -113,6 +146,9 @@ public class MainController {
         setConnectionStatus();
     }
 
+    /**
+     * Handles the "Update Order" button. Prompts user for new values and updates the selected order.
+     */
     @FXML
     private void handleUpdateOrder() {
         var selected = orderTable.getSelectionModel().getSelectedItem();
@@ -137,6 +173,9 @@ public class MainController {
         setConnectionStatus();
     }
 
+    /**
+     * Handles the "Delete Order" button. Confirms deletion and removes the selected order.
+     */
     @FXML
     private void handleDeleteOrder() {
         var selected = orderTable.getSelectionModel().getSelectedItem();
@@ -166,6 +205,9 @@ public class MainController {
         });
     }
 
+    /**
+     * Handles the "Load File" button. Loads shipping orders from a user-selected text file.
+     */
     @FXML
     private void handleLoadFile() {
         FileChooser chooser = new FileChooser();
@@ -243,7 +285,6 @@ public class MainController {
 
             String name = result.get().trim();
 
-            // Only allow letters and a single space between words
             if (name.isEmpty()) {
                 showValidationError("Name cannot be blank.");
             } else if (name.length() > 30) {
@@ -263,6 +304,9 @@ public class MainController {
         alert.showAndWait();
     }
 
+    /**
+     * Handles the "Exit" button. Closes the database connection and exits the program.
+     */
     @FXML
     private void handleExit() {
         try {
@@ -278,11 +322,19 @@ public class MainController {
         System.exit(0);
     }
 
+    /**
+     * Sets the status label text with a fade-in animation effect.
+     *
+     * @param message the message to display
+     */
     private void setStatus(String message) {
         statusLabel.setText(message);
         animateStatus();
     }
 
+    /**
+     * Animates the status label with a brief scaling effect for visual feedback.
+     */
     private void animateStatus() {
         ScaleTransition anim = new ScaleTransition(Duration.millis(400), statusLabel);
         anim.setFromX(1.0);

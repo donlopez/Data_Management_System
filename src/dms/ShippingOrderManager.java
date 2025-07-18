@@ -8,20 +8,43 @@ import java.io.FileReader;
 import java.io.IOException;
 
 /**
- * Manager class for all ShippingOrder operations.
- * Calculates shipping cost in Java (not in the database).
- * Fully supports CRUD operations and loading data with JOINs.
- * Removes any existing cost before recalculating it during insert or update.
- * Validates shipper and customer names to reject numeric values or names longer than 30 characters.
+ * Manager class for handling all operations related to ShippingOrder records.
+ * Supports full CRUD operations, loading orders from files, and automatic data validation.
+ *
+ * <p>Responsibilities include:</p>
+ * <ul>
+ *     <li>Inserting and updating orders using foreign key relationships</li>
+ *     <li>Validating customer and shipper names</li>
+ *     <li>Auto-creating customer/shipper records if they don't exist</li>
+ *     <li>Calculating shipping cost in Java instead of SQL</li>
+ *     <li>Loading data with JOINs for display</li>
+ * </ul>
+ *
+ * Author: Julio Lopez
+ * Version: 1.0
  */
 public class ShippingOrderManager {
+
+    /** In-memory list of all shipping orders (used for display and search) */
     private final List<ShippingOrder> orders;
 
+    /**
+     * Constructor initializes the order list and loads data from the database.
+     */
     public ShippingOrderManager() {
         orders = new ArrayList<>();
         loadOrdersFromDatabase();
     }
 
+    /**
+     * Adds a new order after validating and inserting related customer and shipper records.
+     *
+     * @param customerName customer name (validated and stored)
+     * @param shipperName shipper name (validated and stored)
+     * @param weight shipment weight in pounds
+     * @param distance shipping distance in miles
+     * @return true if added successfully, false otherwise
+     */
     public boolean addOrder(String customerName, String shipperName, double weight, int distance) {
         if (!isValidName(customerName) || !isValidName(shipperName)) return false;
         if (weight <= 0 || weight > 150 || distance <= 0 || distance > 3000) return false;
@@ -35,7 +58,7 @@ public class ShippingOrderManager {
 
             int customerId = getOrInsertCustomerId(conn, customerName);
             int shipperId = getOrInsertShipperId(conn, shipperName);
-            double cost = calculateShippingCost(weight, distance); // Java-side calculation
+            double cost = calculateShippingCost(weight, distance);
 
             String sql = """
                 INSERT INTO ShippingOrder (customer_id, shipper_id, weight_in_pounds, distance_in_miles, shipping_cost)
@@ -58,6 +81,14 @@ public class ShippingOrderManager {
         }
     }
 
+    /**
+     * Updates an existing shipping order's weight, distance, and recalculated cost.
+     *
+     * @param orderId order ID to update
+     * @param weight new weight
+     * @param distance new distance
+     * @return true if updated successfully, false otherwise
+     */
     public boolean updateOrder(int orderId, double weight, int distance) {
         if (weight <= 0 || weight > 150 || distance <= 0 || distance > 3000) return false;
 
@@ -74,7 +105,7 @@ public class ShippingOrderManager {
                 return false;
             }
 
-            double cost = calculateShippingCost(weight, distance); // Recalculate cost
+            double cost = calculateShippingCost(weight, distance);
 
             String sql = """
                 UPDATE ShippingOrder
@@ -98,6 +129,12 @@ public class ShippingOrderManager {
         }
     }
 
+    /**
+     * Deletes an order from the database by ID.
+     *
+     * @param id order ID to delete
+     * @return true if deleted, false if not found or failed
+     */
     public boolean deleteOrder(int id) {
         try {
             Connection conn = DBConnectionManager.getInstance().getConnection();
@@ -121,6 +158,12 @@ public class ShippingOrderManager {
         return false;
     }
 
+    /**
+     * Finds an order by ID from the in-memory list.
+     *
+     * @param id the order ID to search
+     * @return ShippingOrder if found, otherwise null
+     */
     public ShippingOrder findOrder(int id) {
         for (ShippingOrder order : orders) {
             if (order.getOrderId() == id) return order;
@@ -128,10 +171,21 @@ public class ShippingOrderManager {
         return null;
     }
 
+    /**
+     * Returns the full list of shipping orders currently held in memory.
+     *
+     * @return a list of all ShippingOrder objects loaded from the database
+     */
     public List<ShippingOrder> getAllOrders() {
         return orders;
     }
 
+    /**
+     * Loads orders from a file with structured pipe-delimited format.
+     * Each line should have 5 fields: ID | Customer | Shipper | Weight | Distance
+     *
+     * @param filename path to the .txt file
+     */
     public void loadOrdersFromFile(String filename) {
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             String line;
@@ -151,7 +205,7 @@ public class ShippingOrderManager {
     }
 
     private int getOrInsertCustomerId(Connection conn, String name) throws SQLException {
-        if (!isValidName(name)) throw new SQLException("Invalid customer name: must not contain numbers and max 30 characters.");
+        if (!isValidName(name)) throw new SQLException("Invalid customer name.");
 
         String select = "SELECT customer_id FROM Customer WHERE name = ?";
         try (PreparedStatement stmt = conn.prepareStatement(select)) {
@@ -172,7 +226,7 @@ public class ShippingOrderManager {
     }
 
     private int getOrInsertShipperId(Connection conn, String name) throws SQLException {
-        if (!isValidName(name)) throw new SQLException("Invalid shipper name: must not contain numbers and max 30 characters.");
+        if (!isValidName(name)) throw new SQLException("Invalid shipper name.");
 
         String select = "SELECT shipper_id FROM Shipper WHERE name = ?";
         try (PreparedStatement stmt = conn.prepareStatement(select)) {
@@ -192,16 +246,10 @@ public class ShippingOrderManager {
         throw new SQLException("Failed to insert or fetch shipper.");
     }
 
-    /**
-     * Shipping cost formula: weight * distance * 0.0015, rounded to 2 decimal places.
-     */
     private double calculateShippingCost(double weight, int distance) {
         return Math.round(weight * distance * 0.0015 * 100.0) / 100.0;
     }
 
-    /**
-     * Validates name: not null, <= 30 characters, no digits allowed.
-     */
     private boolean isValidName(String name) {
         return name != null && name.length() <= 30 && !name.matches(".*\\d.*");
     }
@@ -231,6 +279,7 @@ public class ShippingOrderManager {
 
             try (Statement stmt = conn.createStatement();
                  ResultSet rs = stmt.executeQuery(sql)) {
+
                 while (rs.next()) {
                     double weight = rs.getDouble("weight_in_pounds");
                     int distance = rs.getInt("distance_in_miles");
