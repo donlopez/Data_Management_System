@@ -4,6 +4,71 @@ A **Java-based console + JavaFX GUI application** to manage small-package shippi
 
 ---
 
+## 🔁 Software Development Life Cycle (SDLC)
+
+### 📋 1. Requirement Plan
+Defines the goals and features of the system before development begins.
+
+- **Functional Requirements:**
+   - Create, read, update, delete (CRUD) shipping orders
+   - Automatically calculate shipping cost based on weight and distance
+   - Accept input via console and GUI
+   - Validate user input and prevent invalid states
+
+- **Non-Functional Requirements:**
+   - Platform-independent (Java)
+   - Input validation and error handling
+   - Modular, testable, and scalable design
+   - GUI with a user-friendly, modern interface
+
+- **Core Data Attributes:**
+   - `orderId`: Unique identifier
+   - `customerName`: String (alphabetic only)
+   - `shipperName`: String (alphabetic only)
+   - `weightInPounds`: Double (0.1–150 lbs)
+   - `distanceInMiles`: Integer (1–3000 miles)
+   - `shippingCost`: Auto-calculated
+
+---
+
+### 🏗️ 2. Implementation Plan
+
+- **Architecture:**
+   - Layered structure separating UI, business logic, and data
+   - GUI uses JavaFX with FXML
+   - Final phase includes JDBC/MySQL database connection
+
+- **Technology Stack:**
+   - Java 17
+   - JavaFX (FXML)
+   - MySQL
+   - JUnit for testing
+
+- **Layer Evolution:**
+   - Phase 1: Console-based CLI
+   - Phase 2: Encapsulated business logic
+   - Phase 3: GUI layer added (JavaFX)
+   - Phase 4: SQL backend integrated via JDBC
+
+---
+
+### 🧪 3. Software Testing Plan
+
+- **Approach:**
+   - Test-Driven Development (TDD)
+   - Unit tests created before logic implementation
+
+- **Focus Areas:**
+   - Functional correctness of all CRUD operations
+   - Validation for edge cases (max weight/distance)
+   - Invalid inputs (blank, negative, malformed)
+
+- **Tools:**
+   - JUnit for unit and boundary tests
+   - Manual GUI testing for user interaction
+
+---
+
 ## 🚀 Features
 
 - Create, view, update, and delete shipping orders
@@ -21,12 +86,12 @@ A **Java-based console + JavaFX GUI application** to manage small-package shippi
 
 The codebase is cleanly structured into three layers:
 
-```
-├── UI Layer (JavaFX + console)
+
+````
+├── UI Layer (Console → JavaFX GUI)
 ├── Logic Layer (ShippingOrderManager.java)
-│
-└── Data Layer (in-memory via ArrayList<ShippingOrder>)
-```
+└── Data Layer (ArrayList → SQL via JDBC)
+````
 
 ---
 
@@ -97,11 +162,10 @@ To run the GUI in IntelliJ:
 1. Download JavaFX SDK: [gluonhq.com/products/javafx](https://gluonhq.com/products/javafx/)
 2. Extract the SDK
 3. In IntelliJ:
-    - Go to **File > Project Structure > Libraries**
-    - Add all `.jar` files from the `lib` folder
+   - Go to **File > Project Structure > Libraries**
+   - Add all `.jar` files from the `lib` folder
 4. Add VM options in **Run > Edit Configurations**:
-    - Add all `--module-path <your_path_here>/lib --add-modules javafx.controls,javafx.fxml` (Replace `<your_path_here>` with the actual path where you placed the JavaFX SDK.)
-
+   - Add all `--module-path <your_path_here>/lib --add-modules javafx.controls,javafx.fxml` (Replace `<your_path_here>` with the actual path where you placed the JavaFX SDK.)
 
 > If VM options aren’t visible, click  
 > **Modify Options > Add VM options**
@@ -137,6 +201,20 @@ JDBC support is live! App now persists data to MySQL:
 - UI displays connection errors cleanly
 - Seamless JavaFX ↔ SQL communication
 - Modular backend ready for future data sources
+
+---
+## 📊 UML Diagram (Final – Post Phase 4)
+
+This updated UML diagram reflects the complete system after Phase 4, including:
+
+- Full database integration via `DBConnectionManager` and `DatabaseHelper`
+- JavaFX interface logic in `MainController` and `LoginView`
+- Business logic encapsulated in `ShippingOrderManager`
+- Console fallback with `ConsoleMain`
+- Unit tests for both individual orders and the manager class
+- Entity relationships: `Customer`, `Shipper`, and `ShippingOrder`
+
+![UML Diagram](./UML/UMLLatestDiagram.png)
 
 ---
 
